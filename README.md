@@ -78,11 +78,11 @@ Si esos archivos no cambiaron, basta con ejecutar `npm start` en `frontend/`. No
 
 Todos estos comandos se ejecutan desde `frontend/`:
 
-| Comando | Uso |
-| --- | --- |
-| `npm start` | Inicia el servidor de desarrollo en el puerto 4200. |
-| `npm run build` | Genera la compilación del frontend en `frontend/dist/`. |
-| `npm test` | Ejecuta las pruebas configuradas para Angular. |
+| Comando           | Uso                                                           |
+| ----------------- | ------------------------------------------------------------- |
+| `npm start`     | Inicia el servidor de desarrollo en el puerto 4200.           |
+| `npm run build` | Genera la compilación del frontend en `frontend/dist/`.    |
+| `npm test`      | Ejecuta las pruebas configuradas para Angular.                |
 | `npm run watch` | Compila continuamente usando la configuración de desarrollo. |
 
 ## Solución de problemas
@@ -96,7 +96,6 @@ Todos estos comandos se ejecutan desde `frontend/`:
    node --version
    npm --version
    ```
-
 3. Si acabas de cambiar de rama o se interrumpió una instalación anterior, ejecuta de nuevo `npm install`.
 
 ### El puerto 4200 está ocupado
