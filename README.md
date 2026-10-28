@@ -55,7 +55,7 @@ php -S localhost:8000 -t backend
 
 El backend quedará disponible en [http://localhost:8000/](http://localhost:8000/). Mantén esta terminal abierta mientras uses el frontend.
 
-> Actualmente `backend/` contiene la indicación de que el backend debe desarrollarse en PHP, pero todavía no tiene un archivo PHP de entrada. Cuando se agregue, por ejemplo `backend/index.php`, el comando anterior podrá atenderlo directamente. Si el equipo define otra ruta, puerto o configuración de base de datos, deberá actualizarse esta sección y la configuración de las llamadas del frontend.
+> El endpoint de autenticación está en `backend/api/auth.php`. Angular usa `frontend/proxy.conf.json` para enviar `/api` al servidor PHP. La conexión local está configurada para MariaDB en la base `conjunto_app`.
 
 ## Trabajo diario
 
@@ -126,7 +126,7 @@ Confirma que:
 - Angular está en `http://localhost:4200/`.
 - PHP está en `http://localhost:8000/` (o en el puerto alternativo elegido).
 - Las URLs usadas por los servicios de Angular coinciden con la dirección del backend.
-- El backend permita solicitudes desde el origen del frontend (configuración CORS), cuando la comunicación entre ambos componentes ya esté implementada.
+- Angular reenvía `/api` al backend mediante `frontend/proxy.conf.json`; al cambiar el puerto PHP, actualiza el destino de ese archivo.
 
 ## Checklist antes de empezar a trabajar
 
