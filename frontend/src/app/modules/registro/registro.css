@@ -1,0 +1,36 @@
+:host { display: block; min-height: 100vh; color: #182d25; font-family: Inter, 'Segoe UI', sans-serif; }
+.auth-page { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; background: #fbfcfa; }
+.auth-card { width: min(100% - 48px, 440px); margin: auto; padding: 32px 0; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: #183b2d; font-size: 19px; font-weight: 750; letter-spacing: -.5px; text-decoration: none; }
+.brand-mark { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; color: white; background: #2d7054; font-family: Georgia, serif; font-size: 21px; }
+.intro { margin: 27px 0 20px; }
+.eyebrow, .panel-kicker { color: #52816a; font-size: 10px; font-weight: 800; letter-spacing: 1.7px; }
+h1 { margin: 9px 0 7px; color: #19382b; font-size: clamp(29px, 3vw, 36px); font-weight: 650; letter-spacing: -1.4px; line-height: 1.15; }
+.intro > p:last-child, .welcome-content > p { color: #77827c; font-size: 13px; line-height: 1.65; }
+form { display: grid; gap: 8px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row > div { display: grid; gap: 8px; }
+label { margin-top: 5px; color: #34463e; font-size: 11px; font-weight: 650; }
+input { box-sizing: border-box; width: 100%; height: 42px; padding: 0 12px; border: 1px solid #dfe6e1; border-radius: 7px; outline: none; background: #fff; color: #253a30; font: inherit; font-size: 12px; transition: border-color .18s, box-shadow .18s; }
+input::placeholder { color: #a5aea8; }
+input:focus { border-color: #4e8b6d; box-shadow: 0 0 0 3px #4e8b6d1c; }
+.optional { color: #929d96; font-weight: 400; }
+.submit-button { display: flex; justify-content: center; align-items: center; gap: 12px; height: 46px; margin-top: 9px; border: 0; border-radius: 8px; background: #286547; color: white; font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; transition: background .18s, transform .18s; }
+.submit-button:hover { transform: translateY(-1px); background: #20543b; }
+.switch-page { margin: 17px 0; color: #7a857f; text-align: center; font-size: 11px; }
+.switch-page a { color: #286547; font-weight: 700; text-decoration: none; }
+.switch-page a:hover { text-decoration: underline; }
+.security-note { display: flex; justify-content: center; align-items: center; gap: 8px; color: #929d96; font-size: 10px; }
+.security-note span { color: #72a184; font-size: 8px; }
+.welcome-panel { position: relative; display: flex; min-height: 100vh; align-items: center; overflow: hidden; padding: 0 12%; box-sizing: border-box; background: radial-gradient(ellipse at 60% 92%, #4a80604d, transparent 42%), linear-gradient(145deg, #eff5ef, #e8f0e8); }
+.welcome-content { width: 100%; max-width: 470px; margin: 0 auto; padding-top: 25px; }
+.welcome-content h2 { margin: 18px 0 12px; color: #1c4934; font-size: clamp(38px, 4.2vw, 56px); font-weight: 600; letter-spacing: -2.4px; line-height: 1.07; }
+.welcome-content > p { max-width: 290px; font-size: 14px; }
+.building-art { position: relative; display: flex; height: 270px; align-items: flex-end; justify-content: center; gap: 13px; margin-top: 28px; perspective: 600px; }
+.building { display: flex; width: 26%; flex-direction: column; justify-content: space-evenly; gap: 9px; padding: 13px 11px; border: 1px solid #cad9c9; border-radius: 5px 5px 0 0; background: linear-gradient(100deg, #f9fbf6, #e3ede2); box-shadow: 8px 8px 15px #385d4013; }
+.building i { display: block; height: 16px; background: repeating-linear-gradient(90deg, transparent 0 9px, #87a78d 9px 11px, transparent 11px 19px); opacity: .75; }
+.building-one { height: 61%; }.building-two { height: 86%; background: linear-gradient(100deg, #f7faf4, #dce9dd); }.building-three { height: 70%; }
+.ground { position: absolute; right: -10%; bottom: 0; left: -10%; height: 14px; border-radius: 50%; background: #bfd2bf; }
+.panel-footer { position: absolute; bottom: 34px; color: #799681; font-size: 9px; font-weight: 750; letter-spacing: 1.6px; }
+@media (max-width: 760px) { .auth-page { grid-template-columns: 1fr; }.auth-card { width: min(100% - 40px, 440px); padding: 28px 0; }.welcome-panel { display: none; } }
+@media (max-height: 740px) and (min-width: 761px) { .auth-card { padding: 20px 0; }.intro { margin: 20px 0 14px; }.welcome-panel { min-height: 740px; } }
