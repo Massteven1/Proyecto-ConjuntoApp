@@ -1,0 +1,1 @@
+Aqui van las vistas como el dashboard, login, usuarios, etc.
