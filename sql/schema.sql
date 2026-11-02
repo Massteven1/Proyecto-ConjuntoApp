@@ -248,7 +248,7 @@ SELECT
     COUNT(CASE WHEN c.saldo > 0 THEN 1 END) AS cuotas_pendientes,
     COUNT(CASE WHEN c.saldo > 0 AND c.fecha_vencimiento < CURDATE() THEN 1 END) AS cuotas_en_mora,
     COALESCE(SUM(c.saldo), 0.00) AS saldo_total
-FROM apartamentos a
+FROM apartamentos a;
 INNER JOIN torres t ON a.torre_id = t.id
 LEFT JOIN cuotas c ON a.id = c.apartamento_id
 GROUP BY a.id, t.nombre, a.numero;
@@ -256,13 +256,14 @@ GROUP BY a.id, t.nombre, a.numero;
 -- 2. Procedimiento Almacenado: sp_generar_cuotas
 -- Genera las cuotas del mes para todos los apartamentos según su coeficiente
 DELIMITER $$
+DROP PROCEDURE IF EXISTS sp_generar_cuotas$$
 CREATE PROCEDURE sp_generar_cuotas(
     IN p_periodo CHAR(7),
     IN p_presupuesto_base DECIMAL(12,2),
     IN p_fecha_vencimiento DATE
 )
 BEGIN
-    INSERT INTO cuotas (apartamento_id, periodo, valor, fecha_vencimiento, saldo, estado)
+    INSERT IGNORE INTO cuotas (apartamento_id, periodo, valor, fecha_vencimiento, saldo, estado)
     SELECT 
         a.id,
         p_periodo,
@@ -270,11 +271,8 @@ BEGIN
         p_fecha_vencimiento,
         ROUND(p_presupuesto_base * a.coeficiente, 2),
         'Pendiente'
-    FROM apartamentos a
-    WHERE NOT EXISTS (
-        SELECT 1 FROM cuotas c 
-        WHERE c.apartamento_id = a.id AND c.periodo = p_periodo
-    );
+    FROM apartamentos a;
+    SELECT ROW_COUNT() AS generadas;
 END$$
 DELIMITER ;
 

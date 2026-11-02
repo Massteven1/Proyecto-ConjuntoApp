@@ -57,6 +57,12 @@ El backend quedará disponible en [http://localhost:8000/](http://localhost:8000
 
 > Actualmente `backend/` contiene la indicación de que el backend debe desarrollarse en PHP, pero todavía no tiene un archivo PHP de entrada. Cuando se agregue, por ejemplo `backend/index.php`, el comando anterior podrá atenderlo directamente. Si el equipo define otra ruta, puerto o configuración de base de datos, deberá actualizarse esta sección y la configuración de las llamadas del frontend.
 
+### Base de datos y generación de cuotas
+
+Importa `sql/schema.sql` en MySQL para crear las tablas y `sp_generar_cuotas`. Antes de iniciar PHP, configura las variables de entorno `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASSWORD` con los datos locales de la base `conjunto_app`. El API de cuotas se encuentra en `http://localhost:8000/api/cuotasAPI.php`.
+
+La colección de Postman `docs/postman/cuotas.postman_collection.json` incluye el caso de generación; ejecuta la misma solicitud dos veces para verificar que el segundo intento no duplique cuotas del mismo apartamento y periodo.
+
 ## Trabajo diario
 
 Cada vez que descargues cambios nuevos del repositorio:
