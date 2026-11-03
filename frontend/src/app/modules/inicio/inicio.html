@@ -1,0 +1,16 @@
+<main>
+  <a class="brand" routerLink="/login">ConjuntoApp</a>
+  @if (cargando) {
+    <p>Comprobando sesión…</p>
+  } @else if (usuario) {
+    <h1>Inicio</h1>
+    <p>Inicio de sesión correcto.</p>
+    <p>Bienvenido/a, <strong>{{ usuario.nombres }} {{ usuario.apellidos }}</strong>.</p>
+    <button class="submit-button" type="button" (click)="cerrarSesion()" [disabled]="cargando">
+      {{ cargando ? 'Cerrando sesión…' : 'Cerrar sesión' }}
+    </button>
+    @if (mensaje) {
+      <p class="status-message error" role="status">{{ mensaje }}</p>
+    }
+  }
+</main>

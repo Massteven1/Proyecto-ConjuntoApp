@@ -1,0 +1,5 @@
+:host { display: block; color: #182d25; background-color: #fbfcfa; }
+.brand, a { color: #286547; }
+.submit-button { color: #fff; background-color: #286547; }
+.status-message { color: #286547; }
+.status-message.error { color: #a23f37; }

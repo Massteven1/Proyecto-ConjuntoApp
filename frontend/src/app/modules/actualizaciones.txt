@@ -1,0 +1,2 @@
+El inicio de sesion y la autenticacion tambien, registrarse igual, el login manda a inicio en donde esta el nombre del usuaio con el que se inicio sesion y un boton para cerrar sesion, las peticiones se actualizan correctamente 
+

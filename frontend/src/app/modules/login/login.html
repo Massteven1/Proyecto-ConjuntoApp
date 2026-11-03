@@ -1,0 +1,23 @@
+<main>
+  <a class="brand" routerLink="/login">ConjuntoApp</a>
+  <h1>Iniciar sesión</h1>
+  <form (ngSubmit)="onSubmit()">
+    <p>
+      <label for="correo">Correo electrónico<br />
+        <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="email" required />
+      </label>
+    </p>
+    <p>
+      <label for="password">Contraseña<br />
+        <input id="password" name="password" type="password" [(ngModel)]="password" autocomplete="current-password" required />
+      </label>
+    </p>
+    <button class="submit-button" type="submit" [disabled]="cargando">
+      {{ cargando ? 'Ingresando…' : 'Iniciar sesión' }}
+    </button>
+  </form>
+  @if (mensaje) {
+    <p class="status-message" [class.error]="error" role="status">{{ mensaje }}</p>
+  }
+  <p>¿No tienes una cuenta? <a routerLink="/registro">Regístrate</a></p>
+</main>

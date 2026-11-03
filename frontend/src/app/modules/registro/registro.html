@@ -1,0 +1,47 @@
+<main>
+  <a class="brand" routerLink="/login">ConjuntoApp</a>
+  <h1>Crear cuenta</h1>
+  <p>Registra tus datos para acceder al portal de residentes.</p>
+
+  <form (ngSubmit)="onSubmit()">
+    <p>
+      <label for="nombres">Nombres<br />
+        <input id="nombres" name="nombres" [(ngModel)]="nombres" autocomplete="given-name" required />
+      </label>
+    </p>
+    <p>
+      <label for="apellidos">Apellidos<br />
+        <input id="apellidos" name="apellidos" [(ngModel)]="apellidos" autocomplete="family-name" required />
+      </label>
+    </p>
+    <p>
+      <label for="documento">Número de documento<br />
+        <input id="documento" name="documento" [(ngModel)]="documento" autocomplete="off" required />
+      </label>
+    </p>
+    <p>
+      <label for="correo">Correo electrónico<br />
+        <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="email" required />
+      </label>
+    </p>
+    <p>
+      <label for="telefono">Teléfono (opcional)<br />
+        <input id="telefono" name="telefono" type="tel" [(ngModel)]="telefono" autocomplete="tel" />
+      </label>
+    </p>
+    <p>
+      <label for="password">Contraseña (mínimo 8 caracteres)<br />
+        <input id="password" name="password" type="password" [(ngModel)]="password" autocomplete="new-password" minlength="8" required />
+      </label>
+    </p>
+    <button class="submit-button" type="submit" [disabled]="cargando">
+      {{ cargando ? 'Creando cuenta…' : 'Crear cuenta' }}
+    </button>
+  </form>
+
+  @if (mensaje) {
+    <p class="status-message" [class.error]="error" role="status">{{ mensaje }}</p>
+  }
+
+  <p>¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a></p>
+</main>

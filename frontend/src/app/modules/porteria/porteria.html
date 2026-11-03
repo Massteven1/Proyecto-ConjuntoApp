@@ -1,0 +1,81 @@
+<p>
+  <a routerLink="/inicio">Inicio</a> |
+  <a routerLink="/visitantes">Visitantes</a>
+</p>
+
+<h1>Porteria</h1>
+
+@if (usuario) {
+  <p>Portero: {{ usuario.nombres }} {{ usuario.apellidos }}</p>
+}
+
+<form (ngSubmit)="buscar()">
+  <label for="documento">Documento del visitante</label>
+  <input id="documento" name="documento" type="text" [(ngModel)]="documento" />
+  <button type="submit">Buscar</button>
+</form>
+
+@if (resultado) {
+  <dl>
+    <dt>Nombre</dt>
+    <dd>{{ resultado.nombre }}</dd>
+
+    <dt>Documento</dt>
+    <dd>{{ resultado.documento }}</dd>
+
+    <dt>Apartamento</dt>
+    <dd>{{ resultado.torre }} - {{ resultado.apartamento }}</dd>
+
+    <dt>Fecha de autorizacion</dt>
+    <dd>{{ resultado.fecha_visita }}</dd>
+
+    <dt>Vehiculo</dt>
+    <dd>{{ resultado.con_vehiculo == 1 ? 'Si' : 'No' }}</dd>
+
+    <dt>Placa</dt>
+    <dd>{{ resultado.placa }}</dd>
+
+    <dt>Estado</dt>
+    <dd>{{ resultado.dentro == 1 ? 'Dentro' : 'Fuera' }}</dd>
+  </dl>
+
+  <button type="button" (click)="ingresar()">Registrar ingreso</button>
+  <button type="button" (click)="salir()">Registrar salida</button>
+}
+
+<p>{{ mensaje }}</p>
+
+<h2>Visitantes dentro</h2>
+
+@if (dentro.length > 0) {
+  <table>
+    <thead>
+      <tr>
+        <th>Visitante</th>
+        <th>Documento</th>
+        <th>Apartamento</th>
+        <th>Torre</th>
+        <th>Placa</th>
+        <th>Fecha ingreso</th>
+        <th>Portero</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (d of dentro; track d.id) {
+        <tr>
+          <td>{{ d.visitante }}</td>
+          <td>{{ d.documento }}</td>
+          <td>{{ d.apartamento }}</td>
+          <td>{{ d.torre }}</td>
+          <td>{{ d.placa }}</td>
+          <td>{{ d.fecha_ingreso }}</td>
+          <td>{{ d.portero }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@if (dentro.length == 0) {
+  <p>No hay visitantes dentro</p>
+}
