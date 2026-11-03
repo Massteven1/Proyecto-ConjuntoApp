@@ -6,6 +6,9 @@
     <h1>Inicio</h1>
     <p>Inicio de sesión correcto.</p>
     <p>Bienvenido/a, <strong>{{ usuario.nombres }} {{ usuario.apellidos }}</strong>.</p>
+    @if (usuario.rol === 'Administrador') {
+      <p><a routerLink="/zonas">Administrar zonas comunes</a></p>
+    }
     <button class="submit-button" type="button" (click)="cerrarSesion()" [disabled]="cargando">
       {{ cargando ? 'Cerrando sesión…' : 'Cerrar sesión' }}
     </button>

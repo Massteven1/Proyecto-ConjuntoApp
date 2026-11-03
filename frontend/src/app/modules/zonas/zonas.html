@@ -1,0 +1,99 @@
+<main class="zonas-page">
+  <nav aria-label="Navegación">
+    <a routerLink="/inicio">Inicio</a>
+  </nav>
+
+  <header>
+    <p class="eyebrow">Administración</p>
+    <h1>Zonas comunes</h1>
+    <p>Administra los espacios disponibles para reservas del conjunto.</p>
+  </header>
+
+  @if (mensaje) {
+    <p class="mensaje" [class.error]="error" role="status">{{ mensaje }}</p>
+  }
+
+  <section class="panel" aria-labelledby="form-title">
+    <h2 id="form-title">{{ editandoId === null ? 'Agregar zona' : 'Editar zona' }}</h2>
+    <form (ngSubmit)="guardar()">
+      <label>
+        Nombre
+        <input name="nombre" type="text" [(ngModel)]="formulario.nombre" maxlength="100" required />
+      </label>
+      <label>
+        Aforo
+        <input name="aforo" type="number" [(ngModel)]="formulario.aforo" min="1" step="1" required />
+      </label>
+      <label>
+        Hora de apertura
+        <input name="hora_apertura" type="time" [(ngModel)]="formulario.hora_apertura" required />
+      </label>
+      <label>
+        Hora de cierre
+        <input name="hora_cierre" type="time" [(ngModel)]="formulario.hora_cierre" required />
+      </label>
+      <label>
+        Costo de uso
+        <input name="costo" type="number" [(ngModel)]="formulario.costo" min="0" step="0.01" required />
+      </label>
+      <label class="check">
+        <input name="requiere_deposito" type="checkbox" [(ngModel)]="formulario.requiere_deposito" />
+        Requiere depósito
+      </label>
+      <div class="acciones">
+        <button type="submit" [disabled]="guardando">
+          {{ guardando ? 'Guardando…' : editandoId === null ? 'Crear zona' : 'Guardar cambios' }}
+        </button>
+        @if (editandoId !== null) {
+          <button class="secundario" type="button" (click)="cancelarEdicion()" [disabled]="guardando">
+            Cancelar
+          </button>
+        }
+      </div>
+    </form>
+  </section>
+
+  <section class="panel" aria-labelledby="list-title">
+    <h2 id="list-title">Zonas registradas</h2>
+    @if (cargando) {
+      <p>Cargando zonas…</p>
+    } @else if (zonas.length === 0) {
+      <p>No hay zonas comunes activas.</p>
+    } @else {
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Aforo</th>
+              <th>Horario</th>
+              <th>Costo</th>
+              <th>Depósito</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (zona of zonas; track zona.id) {
+              <tr>
+                <td>{{ zona.nombre }}</td>
+                <td>{{ zona.aforo }}</td>
+                <td>{{ zona.hora_apertura.slice(0, 5) }} – {{ zona.hora_cierre.slice(0, 5) }}</td>
+                <td>{{ zona.costo | currency:'COP':'symbol-narrow':'1.0-2' }}</td>
+                <td>{{ zona.requiere_deposito === 1 ? 'Sí' : 'No' }}</td>
+                <td class="acciones-fila">
+                  <button class="secundario" type="button" (click)="editar(zona)">Editar</button>
+                  <button class="peligro" type="button" (click)="eliminar(zona)">Inactivar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="paginacion">
+        <button class="secundario" type="button" (click)="cambiarPagina(-1)" [disabled]="pagina === 1">Anterior</button>
+        <span>Página {{ pagina }} de {{ totalPaginas }}</span>
+        <button class="secundario" type="button" (click)="cambiarPagina(1)" [disabled]="pagina * 20 >= total">Siguiente</button>
+      </div>
+    }
+  </section>
+</main>

@@ -57,6 +57,10 @@ El backend quedará disponible en [http://localhost:8000/](http://localhost:8000
 
 > El endpoint de autenticación está en `backend/api/auth.php`. Angular usa `frontend/proxy.conf.json` para enviar `/api` al servidor PHP. La conexión local está configurada para MariaDB en la base `conjunto_app`.
 
+### Gestión de zonas comunes
+
+Al iniciar sesión con un usuario Administrador, el inicio ofrece el enlace **Administrar zonas comunes**. Desde allí se pueden crear, consultar, editar e inactivar zonas; el endpoint `backend/controllers/zonas.php` restringe estas operaciones al rol Administrador. El catálogo existente `zonas_comunes` del SQL incluye los campos requeridos, así que no hace falta ejecutar una migración.
+
 ## Trabajo diario
 
 Cada vez que descargues cambios nuevos del repositorio:
