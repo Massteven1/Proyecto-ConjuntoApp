@@ -1,0 +1,44 @@
+{
+  "info": {
+    "_postman_id": "d1222638-2fa5-41a1-9ea1-a7a91a071103",
+    "name": "ConjuntoApp - Cuotas",
+    "description": "Caso de prueba del RF: generar cuotas para un periodo sin duplicar apartamento-periodo. Enviar el mismo POST dos veces; la primera respuesta debe informar cuotas nuevas y la segunda generadas: 0, manteniendo las existentes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Generar cuotas del periodo (ejecutar dos veces para validar idempotencia)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"periodo\": \"2026-11\",\n  \"presupuesto_base\": 1500000,\n  \"fecha_vencimiento\": \"2026-11-30\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/cuotasAPI.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "cuotasAPI.php"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
