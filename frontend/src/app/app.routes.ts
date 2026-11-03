@@ -13,6 +13,6 @@ export const routes: Routes = [
   { path: 'inicio', component: Inicio, title: 'Inicio' },
   { path: 'visitantes', component: Visitantes, title: 'Preautorizar visitante' },
   { path: 'porteria', component: Porteria, title: 'Porteria' },
-  { path: 'cuotas', component: Cuotas },
+  { path: 'cuotas', component: Cuotas, title: 'Cuotas' },
   { path: '**', redirectTo: 'login' },
 ];
