@@ -57,6 +57,12 @@ El backend quedará disponible en [http://localhost:8000/](http://localhost:8000
 
 > El endpoint de autenticación está en `backend/api/auth.php`. Angular usa `frontend/proxy.conf.json` para enviar `/api` al servidor PHP. La conexión local está configurada para MariaDB en la base `conjunto_app`.
 
+### Base de datos y generación de cuotas
+
+Importa `sql/schema.sql` en MySQL para crear las tablas y `sp_generar_cuotas`. Antes de iniciar PHP, configura las variables de entorno `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASSWORD` con los datos locales de la base `conjunto_app`. El API de cuotas se encuentra en `http://localhost:8000/api/cuotasAPI.php`.
+
+La colección de Postman `docs/postman/cuotas.postman_collection.json` incluye el caso de generación; ejecuta la misma solicitud dos veces para verificar que el segundo intento no duplique cuotas del mismo apartamento y periodo.
+
 ## Trabajo diario
 
 Cada vez que descargues cambios nuevos del repositorio:
