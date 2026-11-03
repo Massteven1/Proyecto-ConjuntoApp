@@ -1,0 +1,78 @@
+<p>
+  <a routerLink="/inicio">Inicio</a>
+</p>
+
+<h1>Preautorizar visitante</h1>
+
+@if (usuario) {
+  <p>Residente: {{ usuario.nombres }} {{ usuario.apellidos }}</p>
+}
+
+<p>{{ mensaje }}</p>
+
+<form (ngSubmit)="guardar()">
+  <label for="documento">Documento</label>
+  <input id="documento" name="documento" type="text" [(ngModel)]="nuevo.documento" />
+
+  <label for="nombre">Nombre</label>
+  <input id="nombre" name="nombre" type="text" [(ngModel)]="nuevo.nombre" />
+
+  <label for="telefono">Telefono</label>
+  <input id="telefono" name="telefono" type="text" [(ngModel)]="nuevo.telefono" />
+
+  <label for="fecha_visita">Fecha de visita</label>
+  <input id="fecha_visita" name="fecha_visita" type="date" [(ngModel)]="nuevo.fecha_visita" />
+
+  <label for="apartamento_id">Apartamento</label>
+  <select id="apartamento_id" name="apartamento_id" [(ngModel)]="nuevo.apartamento_id">
+    <option value="">Seleccione un apartamento</option>
+    @for (a of apartamentos; track a.id) {
+      <option [value]="a.id">{{ a.torre }} - {{ a.numero }}</option>
+    }
+  </select>
+
+  <label for="con_vehiculo">Vehiculo</label>
+  <input id="con_vehiculo" name="con_vehiculo" type="checkbox" [(ngModel)]="nuevo.con_vehiculo" />
+
+  @if (nuevo.con_vehiculo) {
+    <label for="placa">Placa</label>
+    <input id="placa" name="placa" type="text" [(ngModel)]="nuevo.placa" />
+  }
+
+  <button type="submit" [disabled]="guardando">Preautorizar</button>
+</form>
+
+<h2>Autorizaciones</h2>
+
+@if (autorizaciones.length === 0) {
+  <p>Sin autorizaciones</p>
+} @else {
+  <table>
+    <thead>
+      <tr>
+        <th>Visitante</th>
+        <th>Documento</th>
+        <th>Fecha</th>
+        <th>Apartamento</th>
+        <th>Torre</th>
+        <th>Residente</th>
+        <th>Vehiculo</th>
+        <th>Placa</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (a of autorizaciones; track a.id) {
+        <tr>
+          <td>{{ a.visitante }}</td>
+          <td>{{ a.documento }}</td>
+          <td>{{ a.fecha_visita }}</td>
+          <td>{{ a.apartamento }}</td>
+          <td>{{ a.torre }}</td>
+          <td>{{ a.residente }}</td>
+          <td>{{ a.con_vehiculo == 1 ? 'Si' : 'No' }}</td>
+          <td>{{ a.placa }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
