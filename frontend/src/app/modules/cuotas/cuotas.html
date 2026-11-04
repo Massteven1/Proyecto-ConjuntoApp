@@ -1,0 +1,67 @@
+<div class="contenedor-resultado">
+  <h2>Generar cuotas</h2>
+  <form (ngSubmit)="generarCuotas()">
+    <label>
+      Periodo
+      <input type="month" name="periodo" [(ngModel)]="periodo" required>
+    </label>
+    <label>
+      Presupuesto base del periodo
+      <input type="number" name="presupuestoBase" [(ngModel)]="presupuestoBase" min="0.01" step="0.01" required>
+    </label>
+    <label>
+      Fecha de vencimiento
+      <input type="date" name="fechaVencimiento" [(ngModel)]="fechaVencimiento" required>
+    </label>
+    <button type="submit" [disabled]="cargando()">
+      {{ cargando() ? 'Generando...' : 'Generar cuotas' }}
+    </button>
+  </form>
+
+  @if (error()) {
+    <p role="alert">{{ error() }}</p>
+  }
+
+  @if (respuesta(); as resultado) {
+    <p role="status">
+      {{ resultado.generadas }} cuotas nuevas para {{ resultado.periodo }}.
+      Las cuotas ya existentes para ese periodo no se duplicaron.
+    </p>
+    <div class="tabla-contenedor">
+      <table>
+        <thead>
+          <tr>
+            <th>Torre</th>
+            <th>Apartamento</th>
+            <th>Residentes</th>
+            <th>Periodo</th>
+            <th>Valor</th>
+            <th>Vencimiento</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cuota of resultado.cuotas; track cuota.id) {
+            <tr>
+              <td>{{ cuota.torre }}</td>
+              <td>{{ cuota.apartamento }}</td>
+              <td>
+                @if (cuota.residentes.length) {
+                  @for (residente of cuota.residentes; track residente.id) {
+                    <span>{{ residente.nombre }} ({{ residente.tipo }})</span><br>
+                  }
+                } @else {
+                  Sin residente registrado
+                }
+              </td>
+              <td>{{ cuota.periodo }}</td>
+              <td>{{ cuota.valor }}</td>
+              <td>{{ cuota.fecha_vencimiento }}</td>
+              <td>{{ cuota.estado }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
