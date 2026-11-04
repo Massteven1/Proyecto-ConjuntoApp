@@ -1,0 +1,21 @@
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+@Component({
+  selector: 'app-nav',
+  imports: [RouterLink],
+  template: `
+    <nav>
+      <ul>
+        <li><a routerLink="/inicio">Inicio</a></li>
+        <li><a routerLink="/visitantes">Visitantes</a></li>
+        <li><a routerLink="/porteria">Porteria</a></li>
+        <li><a routerLink="/cuotas">Cuotas</a></li>
+        <li><a routerLink="/registro">Registro</a></li>
+        <li><a routerLink="/login">Login</a></li>
+        <li><a routerLink="/zonas">Zonas</a></li>
+      </ul>
+    </nav>
+  `,
+})
+export class Nav {}
