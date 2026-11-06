@@ -248,7 +248,7 @@ SELECT
     COUNT(CASE WHEN c.saldo > 0 THEN 1 END) AS cuotas_pendientes,
     COUNT(CASE WHEN c.saldo > 0 AND c.fecha_vencimiento < CURDATE() THEN 1 END) AS cuotas_en_mora,
     COALESCE(SUM(c.saldo), 0.00) AS saldo_total
-FROM apartamentos a;
+FROM apartamentos a
 INNER JOIN torres t ON a.torre_id = t.id
 LEFT JOIN cuotas c ON a.id = c.apartamento_id
 GROUP BY a.id, t.nombre, a.numero;

@@ -1,0 +1,33 @@
+<section>
+
+  <h2>Comunicados</h2>
+
+  @if (esAdministrador()) {
+
+      <form (ngSubmit)="publicar()">
+
+        <label>Título <input name="titulo" [(ngModel)]="titulo" required maxlength="150"></label>
+        <label>Contenido <textarea name="contenido" [(ngModel)]="contenido" required></textarea></label>
+        <label>Vigente hasta <input type="date" name="vigencia" [(ngModel)]="vigente_hasta" required></label>
+        <button type="submit">Publicar</button>
+
+      </form>
+
+  }
+  @if (error()) { <p role="alert">{{ error() }}</p> }
+
+  @if (mensaje()) { <p role="status">{{ mensaje() }}</p> }
+
+  @for (comunicado of comunicados(); track comunicado.id) {
+
+    <article>
+      <h3>{{ comunicado.titulo }}</h3>
+      <p>{{ comunicado.contenido }}</p>
+      <small>Vigente hasta {{ comunicado.vigente_hasta }}</small>
+      @if (!comunicado.leido) { <button type="button" (click)="marcarLeido(comunicado)">Marcar como leído</button> }
+      @else { <span>Leído</span> }
+    </article>
+
+  }
+  
+</section>

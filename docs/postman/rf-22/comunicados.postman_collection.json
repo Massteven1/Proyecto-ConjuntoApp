@@ -1,0 +1,36 @@
+{
+  "info": {
+    "name": "ConjuntoApp - RF-22 Comunicados",
+    "description": "Use sesión de administrador para publicar y sesión de residente para consultar y marcar como leído. Repetir la marca no crea duplicados.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Publicar comunicado (administrador)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"titulo\": \"Mantenimiento\",\n  \"contenido\": \"Cierre temporal de la zona común.\",\n  \"vigente_hasta\": \"2026-12-01\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "http://localhost:8000/api/comunicados.php"
+      }
+    },
+    {
+      "name": "Listar comunicados vigentes (residente)",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8000/api/comunicados.php"
+      }
+    },
+    {
+      "name": "Marcar comunicado 1 como leído (residente; idempotente)",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/comunicados.php?id=1"
+      }
+    }
+  ]
+}
