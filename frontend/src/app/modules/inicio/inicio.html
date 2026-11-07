@@ -8,6 +8,11 @@
     <p>Bienvenido/a, <strong>{{ usuario.nombres }} {{ usuario.apellidos }}</strong>.</p>
     @if (usuario.rol === 'Administrador') {
       <p><a routerLink="/zonas">Administrar zonas comunes</a></p>
+      <p><a routerLink="/reservas">Aprobar reservas</a></p>
+    } @else if (usuario.rol === 'Residente') {
+      <p><a routerLink="/reservas">Consultar disponibilidad y reservar zonas</a></p>
+    } @else if (usuario.rol === 'Portero') {
+      <p><a routerLink="/reservas">Ver reservas de hoy</a></p>
     }
     <button class="submit-button" type="button" (click)="cerrarSesion()" [disabled]="cargando">
       {{ cargando ? 'Cerrando sesión…' : 'Cerrar sesión' }}

@@ -59,7 +59,7 @@ El backend quedará disponible en [http://localhost:8000/](http://localhost:8000
 
 ### Gestión de zonas comunes
 
-Al iniciar sesión con un usuario Administrador, el inicio ofrece el enlace **Administrar zonas comunes**. Desde allí se pueden crear, consultar, editar e inactivar zonas; el endpoint `backend/controllers/zonas.php` restringe estas operaciones al rol Administrador. El catálogo existente `zonas_comunes` del SQL incluye los campos requeridos, así que no hace falta ejecutar una migración.
+Al iniciar sesión con un usuario Administrador, el inicio ofrece los enlaces para administrar zonas y aprobar reservas. Desde zonas se pueden crear, consultar, editar e inactivar espacios; desde reservas se revisan las solicitudes pendientes. Los residentes consultan la disponibilidad por fecha, solicitan reservas y cancelan con 24 horas de anticipación. Portería puede consultar las reservas aprobadas del día. El endpoint `backend/controllers/reservas.php` valida cruces, horario, apartamento asociado y cuotas vencidas. La base de datos ya incluye las tablas y campos necesarios; no hace falta ejecutar una migración.
 
 ### Base de datos y generación de cuotas
 

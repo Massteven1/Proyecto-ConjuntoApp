@@ -6,6 +6,7 @@ import { Visitantes } from './modules/visitantes/visitantes';
 import { Porteria } from './modules/porteria/porteria';
 import { Zonas } from './modules/zonas/zonas';
 import { Cuotas } from './modules/cuotas/cuotas';
+import { Reservas } from './modules/reservas/reservas';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'visitantes', component: Visitantes, title: 'Preautorizar visitante' },
   { path: 'porteria', component: Porteria, title: 'Porteria' },
   { path: 'zonas', component: Zonas, title: 'Zonas comunes' },
+  { path: 'reservas', component: Reservas, title: 'Reservas de zonas comunes' },
   { path: 'cuotas', component: Cuotas, title: 'Cuotas' },
   { path: '**', redirectTo: 'login' },
 ];
