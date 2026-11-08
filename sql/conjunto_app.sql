@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Procedimientos
 --
-CREATE DEFINER=`` PROCEDURE `sp_generar_cuotas` (IN `p_periodo` CHAR(7), IN `p_presupuesto_base` DECIMAL(12,2), IN `p_fecha_vencimiento` DATE)   BEGIN
+CREATE PROCEDURE `sp_generar_cuotas` (IN `p_periodo` CHAR(7), IN `p_presupuesto_base` DECIMAL(12,2), IN `p_fecha_vencimiento` DATE)   BEGIN
     INSERT INTO cuotas (apartamento_id, periodo, valor, fecha_vencimiento, saldo, estado)
     SELECT 
         a.id,
@@ -37,7 +37,7 @@ CREATE DEFINER=`` PROCEDURE `sp_generar_cuotas` (IN `p_periodo` CHAR(7), IN `p_p
     FROM apartamentos a
     WHERE NOT EXISTS (
         SELECT 1 FROM cuotas c 
-        WHERE c.apartamento_id = a.id AND c.periodo = p_periodo
+        WHERE c.apartamento_id = a.id AND c.periodo = p_periodo COLLATE utf8mb4_unicode_ci
     );
 END$$
 
@@ -719,7 +719,7 @@ INSERT INTO `zonas_comunes` (`id`, `nombre`, `aforo`, `hora_apertura`, `hora_cie
 --
 DROP TABLE IF EXISTS `v_estado_cuenta`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`` SQL SECURITY DEFINER VIEW `v_estado_cuenta`  AS SELECT `a`.`id` AS `apartamento_id`, `t`.`nombre` AS `torre`, `a`.`numero` AS `apartamento`, count(case when `c`.`saldo` > 0 then 1 end) AS `cuotas_pendientes`, count(case when `c`.`saldo` > 0 and `c`.`fecha_vencimiento` < curdate() then 1 end) AS `cuotas_en_mora`, coalesce(sum(`c`.`saldo`),0.00) AS `saldo_total` FROM ((`apartamentos` `a` join `torres` `t` on(`a`.`torre_id` = `t`.`id`)) left join `cuotas` `c` on(`a`.`id` = `c`.`apartamento_id`)) GROUP BY `a`.`id`, `t`.`nombre`, `a`.`numero` ;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW `v_estado_cuenta`  AS SELECT `a`.`id` AS `apartamento_id`, `t`.`nombre` AS `torre`, `a`.`numero` AS `apartamento`, count(case when `c`.`saldo` > 0 then 1 end) AS `cuotas_pendientes`, count(case when `c`.`saldo` > 0 and `c`.`fecha_vencimiento` < curdate() then 1 end) AS `cuotas_en_mora`, coalesce(sum(`c`.`saldo`),0.00) AS `saldo_total` FROM ((`apartamentos` `a` join `torres` `t` on(`a`.`torre_id` = `t`.`id`)) left join `cuotas` `c` on(`a`.`id` = `c`.`apartamento_id`)) GROUP BY `a`.`id`, `t`.`nombre`, `a`.`numero` ;
 
 --
 -- Índices para tablas volcadas

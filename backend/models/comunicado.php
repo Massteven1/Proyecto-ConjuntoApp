@@ -14,9 +14,10 @@ class Comunicado
     {
         $usuarioId = intval($usuarioId);
         $sql = "SELECT c.id, c.titulo, c.contenido, c.fecha_publicacion, c.vigente_hasta,
-                EXISTS (SELECT 1 FROM comunicados_leidos l
-                        WHERE l.comunicado_id = c.id AND l.usuario_id = $usuarioId) AS leido
+                IF(l.usuario_id IS NULL, 0, 1) AS leido
                 FROM comunicados c
+                LEFT JOIN comunicados_leidos l
+                    ON l.comunicado_id = c.id AND l.usuario_id = $usuarioId
                 WHERE c.fecha_publicacion <= NOW() AND c.vigente_hasta >= CURDATE()
                 ORDER BY c.fecha_publicacion DESC, c.id DESC";
         $resultado = mysqli_query($this->conexion, $sql);

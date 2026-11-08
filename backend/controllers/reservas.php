@@ -1,8 +1,5 @@
 <?php
-header('Access-Control-Allow-Origin: http://localhost:4200');
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
+require_once __DIR__ . '/../cors.php';
 header('Content-Type: application/json; charset=utf-8');
 
 function responderReservas(int $status, array $respuesta): never
@@ -34,11 +31,6 @@ function apartamentoEnMora(mysqli $conexion, int $apartamentoId): bool
     $consulta->bind_param('i', $apartamentoId);
     $consulta->execute();
     return (int) $consulta->get_result()->fetch_assoc()['cuotas_en_mora'] > 2;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
-    exit;
 }
 
 require_once __DIR__ . '/../models/sesion.php';

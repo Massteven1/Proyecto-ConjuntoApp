@@ -1,0 +1,106 @@
+{
+  "info": {
+    "name": "ConjuntoApp - Regresión M5 RF-19 a RF-23",
+    "description": "Configure baseUrl, adminEmail, adminPassword, residentEmail y residentPassword. Ejecute en orden. La generación de cuotas es idempotente; el pago de prueba registra un abono de 1 unidad al apartamento elegido, así que use una base de pruebas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "periodo", "value": "2026-12" },
+    { "key": "apartamentoId", "value": "2" },
+    { "key": "comunicadoId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Login administrador",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"correo\":\"{{adminEmail}}\",\"password\":\"{{adminPassword}}\"}" },
+        "url": "{{baseUrl}}/api/auth.php?action=login"
+      }
+    },
+    {
+      "name": "RF-19 Generar cuotas (idempotencia)",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Generación de cuotas responde y lista cuotas con apartamento', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data).to.have.property('generadas');",
+          "  pm.expect(data.cuotas[0]).to.have.property('apartamento_id');",
+          "});"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"periodo\":\"{{periodo}}\",\"presupuesto_base\":1500000,\"fecha_vencimiento\":\"2026-12-31\"}" },
+        "url": "{{baseUrl}}/api/cuotasAPI.php"
+      }
+    },
+    {
+      "name": "RF-20 Registrar abono parcial",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Pago se aplica a una cuota', function () {",
+          "  pm.response.to.have.status(201);",
+          "  pm.expect(pm.response.json().cuota_id).to.be.a('number');",
+          "});"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"apartamento_id\":{{apartamentoId}},\"fecha_pago\":\"2026-12-01\",\"valor\":1,\"medio\":\"Transferencia\",\"soporte\":\"RF20-Postman\"}" },
+        "url": "{{baseUrl}}/api/pagos.php"
+      }
+    },
+    {
+      "name": "RF-21 Consultar estado de cuenta",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Estado de cuenta devuelve saldo y mora', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const rows = pm.response.json();",
+          "  if (rows.length) {",
+          "    pm.expect(rows[0]).to.have.property('saldo_total');",
+          "    pm.expect(rows[0]).to.have.property('cuotas_en_mora');",
+          "  }",
+          "});"
+        ]}
+      }],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/estadoCuenta.php" }
+    },
+    {
+      "name": "RF-22 Listar comunicados vigentes",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Comunicados contiene solo fechas de vigencia activas', function () {",
+          "  pm.response.to.have.status(200);",
+          "  pm.expect(pm.response.json()).to.be.an('array');",
+          "});"
+        ]}
+      }],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/comunicados.php" }
+    },
+    {
+      "name": "RF-23 Consultar tablero",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Tablero incluye todos los indicadores', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  ['porcentaje_cartera','pqrs_abiertas','reservas_semana','visitantes_hoy'].forEach((key) => pm.expect(data[key]).to.be.a('number'));",
+          "});"
+        ]}
+      }],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/tablero.php" }
+    }
+  ]
+}

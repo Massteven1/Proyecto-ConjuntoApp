@@ -10,6 +10,7 @@ import { Pagos } from './modules/pagos/pagos';
 import { EstadoCuentaComponent } from './modules/estado-cuenta/estado-cuenta';
 import { Comunicados } from './modules/comunicados/comunicados';
 import { Reservas } from './modules/reservas/reservas';
+import { Tablero } from './modules/tablero/tablero';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -22,8 +23,8 @@ export const routes: Routes = [
   { path: 'reservas', component: Reservas, title: 'Reservas de zonas comunes' },
   { path: 'cuotas', component: Cuotas, title: 'Cuotas' },
   { path: 'pagos', component: Pagos, title: 'Registrar pagos' },
-  { path: 'pagos', component: Pagos, title: 'Registrar pagos' },
   { path: 'estado-cuenta', component: EstadoCuentaComponent, title: 'Estado de cuenta' },
   { path: 'comunicados', component: Comunicados, title: 'Comunicados' },
+  { path: 'tablero', component: Tablero, title: 'Tablero' },
   { path: '**', redirectTo: 'login' },
 ];
