@@ -21,7 +21,7 @@ class Conexion
     public function conectar(): mysqli
     {
         if ($this->conexion === null) {
-            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+            mysqli_report(MYSQLI_REPORT_OFF);
             $this->conexion = new mysqli(
                 $this->host,
                 $this->usuario,
@@ -36,4 +36,3 @@ class Conexion
 }
 
 $conexion = (new Conexion())->conectar();
-

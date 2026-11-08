@@ -18,6 +18,7 @@ export const routes: Routes = [
   { path: 'porteria', component: Porteria, title: 'Porteria' },
   { path: 'cuotas', component: Cuotas, title: 'Cuotas' },
   { path: 'pagos', component: Pagos, title: 'Registrar pagos' },
+  { path: 'pagos', component: Pagos, title: 'Registrar pagos' },
   { path: 'estado-cuenta', component: EstadoCuentaComponent, title: 'Estado de cuenta' },
   { path: 'comunicados', component: Comunicados, title: 'Comunicados' },
   { path: '**', redirectTo: 'login' },

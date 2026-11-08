@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { PagosService, PagoCuota } from '../../services/pagos';
+import { CuotaPendiente, PagosService } from '../../services/pagos';
 
 @Component({
   selector: 'app-pagos',
@@ -11,7 +11,7 @@ import { PagosService, PagoCuota } from '../../services/pagos';
 })
 export class Pagos {
   private readonly service = inject(PagosService);
-  public cuotas = signal<PagoCuota[]>([]);
+  public cuotas = signal<CuotaPendiente[]>([]);
   public apartamento_id: number | null = null;
   public fecha_pago = new Date().toISOString().slice(0, 10);
   public valor: number | null = null;

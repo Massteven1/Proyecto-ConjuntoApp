@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('Access-Control-Allow-Credentials: true');
@@ -20,34 +18,33 @@ session_set_cookie_params([
     'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
 ]);
 
-function respond(int $status, array $payload): never
+function responderAuth($codigo, $datos)
 {
-    http_response_code($status);
-    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    http_response_code($codigo);
+    echo json_encode($datos, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
-function requestData(): array
+function datosSolicitudAuth()
 {
-    $raw = file_get_contents('php://input');
-    $data = json_decode($raw === false ? '' : $raw, true);
-    if (!is_array($data)) {
-        respond(400, ['message' => 'La solicitud no contiene datos válidos.']);
+    $datos = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($datos)) {
+        responderAuth(400, ['message' => 'La solicitud no contiene datos válidos.']);
     }
-    return $data;
+    return $datos;
 }
 
-$action = $_GET['action'] ?? '';
+$accion = isset($_GET['action']) ? $_GET['action'] : '';
 
-if ($action === 'me' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+if ($accion == 'me' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     session_start();
     if (!isset($_SESSION['user'])) {
-        respond(401, ['message' => 'No hay una sesión iniciada.']);
+        responderAuth(401, ['message' => 'No hay una sesión iniciada.']);
     }
-    respond(200, ['message' => 'Sesión activa.', 'user' => $_SESSION['user']]);
+    responderAuth(200, ['message' => 'Sesión activa.', 'user' => $_SESSION['user']]);
 }
 
-if ($action === 'logout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($accion == 'logout' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     session_start();
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
@@ -55,94 +52,80 @@ if ($action === 'logout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
     }
     session_destroy();
-    respond(200, ['message' => 'Sesión cerrada.']);
+    responderAuth(200, ['message' => 'Sesión cerrada.']);
 }
 
-try {
-    $pdo = new PDO(
-        'mysql:host=127.0.0.1;dbname=conjunto_app;charset=utf8mb4',
-        'root',
-        '',
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::ATTR_TIMEOUT => 5,
-        ]
-    );
-} catch (PDOException $exception) {
-    error_log($exception->getMessage());
-    respond(500, ['message' => 'No fue posible conectar con la base de datos.']);
-}
+require_once __DIR__ . '/../models/conexion.php';
 
-if ($action === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = requestData();
-    $nombres = trim((string) ($data['nombres'] ?? ''));
-    $apellidos = trim((string) ($data['apellidos'] ?? ''));
-    $documento = trim((string) ($data['documento'] ?? ''));
-    $correo = trim((string) ($data['correo'] ?? ''));
-    $telefono = trim((string) ($data['telefono'] ?? ''));
-    $password = (string) ($data['password'] ?? '');
+if ($accion == 'register' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $datos = datosSolicitudAuth();
+    $nombres = isset($datos['nombres']) && is_string($datos['nombres']) ? trim($datos['nombres']) : '';
+    $apellidos = isset($datos['apellidos']) && is_string($datos['apellidos']) ? trim($datos['apellidos']) : '';
+    $documento = isset($datos['documento']) && is_string($datos['documento']) ? trim($datos['documento']) : '';
+    $correo = isset($datos['correo']) && is_string($datos['correo']) ? trim($datos['correo']) : '';
+    $telefono = isset($datos['telefono']) && is_string($datos['telefono']) ? trim($datos['telefono']) : '';
+    $password = isset($datos['password']) && is_string($datos['password']) ? $datos['password'] : '';
 
-    if ($nombres === '' || $apellidos === '' || $documento === '' || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-        respond(422, ['message' => 'Completa los datos requeridos con un correo válido.']);
+    if ($nombres == '' || $apellidos == '' || $documento == '' || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+        responderAuth(422, ['message' => 'Completa los datos requeridos con un correo válido.']);
     }
     if (strlen($password) < 8) {
-        respond(422, ['message' => 'La contraseña debe tener al menos 8 caracteres.']);
+        responderAuth(422, ['message' => 'La contraseña debe tener al menos 8 caracteres.']);
     }
 
-    $roleQuery = $pdo->prepare("SELECT id FROM roles WHERE LOWER(nombre) = 'residente' LIMIT 1");
-    $roleQuery->execute();
-    $roleId = $roleQuery->fetchColumn();
-    if ($roleId === false) {
-        respond(500, ['message' => 'Falta el rol Residente en la tabla de roles.']);
+    $consultaRol = mysqli_query($conexion, "SELECT id FROM roles WHERE LOWER(nombre) = 'residente' LIMIT 1");
+    $rol = $consultaRol ? mysqli_fetch_assoc($consultaRol) : false;
+    if (!$rol) {
+        responderAuth(500, ['message' => 'Falta el rol Residente en la tabla de roles.']);
     }
 
-    try {
-        $insert = $pdo->prepare(
-            'INSERT INTO usuarios (rol_id, nombres, apellidos, documento, correo, telefono, password_hash, activo)
-             VALUES (:rol_id, :nombres, :apellidos, :documento, :correo, :telefono, :password_hash, 1)'
-        );
-        $insert->execute([
-            'rol_id' => $roleId,
-            'nombres' => $nombres,
-            'apellidos' => $apellidos,
-            'documento' => $documento,
-            'correo' => $correo,
-            'telefono' => $telefono !== '' ? $telefono : null,
-            'password_hash' => password_hash($password, PASSWORD_DEFAULT),
-        ]);
-    } catch (PDOException $exception) {
-        if ($exception->getCode() === '23000') {
-            respond(409, ['message' => 'Ya existe una cuenta con ese correo o documento.']);
+    $rolId = intval($rol['id']);
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = mysqli_prepare($conexion, 'INSERT INTO usuarios (rol_id, nombres, apellidos, documento, correo, telefono, password_hash, activo) VALUES (?, ?, ?, ?, ?, ?, ?, 1)');
+    if (!$stmt) {
+        responderAuth(500, ['message' => 'No fue posible preparar el registro.']);
+    }
+    mysqli_stmt_bind_param($stmt, 'issssss', $rolId, $nombres, $apellidos, $documento, $correo, $telefono, $hash);
+    if (!mysqli_stmt_execute($stmt)) {
+        if (mysqli_errno($conexion) == 1062) {
+            responderAuth(409, ['message' => 'Ya existe una cuenta con ese correo o documento.']);
         }
-        error_log($exception->getMessage());
-        respond(500, ['message' => 'No fue posible crear la cuenta.']);
+        error_log(mysqli_error($conexion));
+        responderAuth(500, ['message' => 'No fue posible crear la cuenta.']);
     }
-
-    respond(201, ['message' => 'Cuenta creada. Ya puedes iniciar sesión.']);
+    responderAuth(201, ['message' => 'Cuenta creada. Ya puedes iniciar sesión.']);
 }
 
-if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = requestData();
-    $correo = trim((string) ($data['correo'] ?? ''));
-    $password = (string) ($data['password'] ?? '');
-    $query = $pdo->prepare(
-        'SELECT u.id, u.nombres, u.apellidos, u.correo, u.password_hash, u.activo, r.nombre AS rol
-         FROM usuarios u INNER JOIN roles r ON r.id = u.rol_id WHERE u.correo = :correo LIMIT 1'
+if ($accion == 'login' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $datos = datosSolicitudAuth();
+    $correo = isset($datos['correo']) && is_string($datos['correo']) ? trim($datos['correo']) : '';
+    $password = isset($datos['password']) && is_string($datos['password']) ? $datos['password'] : '';
+    $stmt = mysqli_prepare(
+        $conexion,
+        'SELECT u.id, u.nombres, u.apellidos, u.correo, u.password_hash, u.activo, r.nombre
+         FROM usuarios u INNER JOIN roles r ON r.id = u.rol_id
+         WHERE u.correo = ? LIMIT 1'
     );
-    $query->execute(['correo' => $correo]);
-    $user = $query->fetch();
-
-    if (!$user || !(bool) $user['activo'] || !password_verify($password, $user['password_hash'])) {
-        respond(401, ['message' => 'La contraseña y/o el correo no son correctos.']);
+    if (!$stmt) {
+        responderAuth(500, ['message' => 'No fue posible preparar el inicio de sesión.']);
+    }
+    mysqli_stmt_bind_param($stmt, 's', $correo);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $id, $nombre, $apellido, $correoUsuario, $hash, $activo, $rol);
+    if (!mysqli_stmt_fetch($stmt) || !$activo || !password_verify($password, $hash)) {
+        responderAuth(401, ['message' => 'La contraseña y/o el correo no son correctos.']);
     }
 
     session_start();
     session_regenerate_id(true);
-    unset($user['password_hash'], $user['activo']);
-    $_SESSION['user'] = $user;
-    respond(200, ['message' => 'Inicio de sesión correcto.', 'user' => $user]);
+    $_SESSION['user'] = [
+        'id' => $id,
+        'nombres' => $nombre,
+        'apellidos' => $apellido,
+        'correo' => $correoUsuario,
+        'rol' => $rol,
+    ];
+    responderAuth(200, ['message' => 'Inicio de sesión correcto.', 'user' => $_SESSION['user']]);
 }
 
-respond(404, ['message' => 'Acción no encontrada.']);
+responderAuth(404, ['message' => 'Acción no encontrada.']);

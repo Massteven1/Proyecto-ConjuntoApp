@@ -4,7 +4,7 @@
     <label>Apartamento / cuota más antigua
       <select name="apartamento" [(ngModel)]="apartamento_id" required>
         <option [ngValue]="null" disabled>Seleccione</option>
-        @for (cuota of cuotas(); track cuota.id) {
+        @for (cuota of cuotas(); track cuota.cuota_id) {
           <option [ngValue]="cuota.apartamento_id">{{ cuota.torre }} - {{ cuota.apartamento }} ({{ cuota.periodo }}, saldo {{ cuota.saldo }})</option>
         }
       </select>

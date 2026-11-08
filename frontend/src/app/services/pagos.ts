@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
-export interface PagoCuota {
-  id: number;
+export interface CuotaPendiente {
+  cuota_id: number;
   apartamento_id: number;
   torre: string;
   apartamento: string;
@@ -12,16 +12,30 @@ export interface PagoCuota {
   fecha_vencimiento: string;
 }
 
+export interface RegistrarPago {
+  apartamento_id: number;
+  fecha_pago: string;
+  valor: number;
+  medio: string;
+  soporte: string;
+}
+
+export interface PagoRegistrado {
+  message: string;
+  pago_id: number;
+  cuota_id: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PagosService {
   private readonly http = inject(HttpClient);
   private readonly endpoint = '/api/pagos.php';
 
-  cuotasPendientes(): Observable<PagoCuota[]> {
-    return this.http.get<PagoCuota[]>(this.endpoint, { withCredentials: true });
+  cuotasPendientes(): Observable<CuotaPendiente[]> {
+    return this.http.get<CuotaPendiente[]>(this.endpoint, { withCredentials: true });
   }
 
-  registrar(data: { apartamento_id: number; fecha_pago: string; valor: number; medio: string; soporte: string }): Observable<{ message: string; pago_id: number; cuota_id: number }> {
-    return this.http.post<{ message: string; pago_id: number; cuota_id: number }>(this.endpoint, data, { withCredentials: true });
+  registrar(data: RegistrarPago): Observable<PagoRegistrado> {
+    return this.http.post<PagoRegistrado>(this.endpoint, data, { withCredentials: true });
   }
 }
