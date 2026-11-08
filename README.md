@@ -67,7 +67,6 @@ Después de importar `sql/conjunto_app.sql`, puedes iniciar sesión con estas cu
 | Residente | `prueba@gmail.com` | `prueba123` |
 | Portero | `portero1@conjunto.com` | `prueba123` |
 
-Son credenciales para desarrollo local; no las uses en una instalación real.
 
 ### Gestión de zonas comunes
 
