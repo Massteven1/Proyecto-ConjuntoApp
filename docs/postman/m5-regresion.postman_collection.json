@@ -1,14 +1,21 @@
 {
   "info": {
     "name": "ConjuntoApp - Regresión M5 RF-19 a RF-23",
-    "description": "Configure baseUrl, adminEmail, adminPassword, residentEmail y residentPassword. Ejecute en orden. La generación de cuotas es idempotente; el pago de prueba registra un abono de 1 unidad al apartamento elegido, así que use una base de pruebas.",
+    "description": "Configura adminEmail, adminPassword, residentEmail, residentPassword, periodoPrueba y residentApartmentIds. Ejecuta las solicitudes en orden. RF-20 registra un pago real de 1 unidad; úsese solo en una BD de pruebas.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:8000" },
-    { "key": "periodo", "value": "2026-12" },
+    { "key": "adminEmail", "value": "" },
+    { "key": "adminPassword", "value": "" },
+    { "key": "residentEmail", "value": "" },
+    { "key": "residentPassword", "value": "" },
+    { "key": "periodoPrueba", "value": "2098-12" },
     { "key": "apartamentoId", "value": "2" },
-    { "key": "comunicadoId", "value": "1" }
+    { "key": "residentApartmentIds", "value": "[1]" },
+    { "key": "comunicadoId", "value": "" },
+    { "key": "saldoAntes", "value": "" },
+    { "key": "cuotaId", "value": "" }
   ],
   "item": [
     {
@@ -21,55 +28,140 @@
       }
     },
     {
-      "name": "RF-19 Generar cuotas (idempotencia)",
+      "name": "RF-19 Generar cuotas primera vez",
       "event": [{
         "listen": "test",
         "script": { "type": "text/javascript", "exec": [
-          "pm.test('Generación de cuotas responde y lista cuotas con apartamento', function () {",
+          "pm.test('RF-19 responde con conteo y cuotas generadas', function () {",
           "  pm.response.to.have.status(200);",
           "  const data = pm.response.json();",
-          "  pm.expect(data).to.have.property('generadas');",
-          "  pm.expect(data.cuotas[0]).to.have.property('apartamento_id');",
+          "  pm.expect(data.generadas).to.be.a('number');",
+          "  pm.expect(data.cuotas).to.be.an('array');",
+          "  if (data.cuotas.length) pm.expect(data.cuotas[0]).to.have.property('apartamento_id');",
           "});"
         ]}
       }],
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": { "mode": "raw", "raw": "{\"periodo\":\"{{periodo}}\",\"presupuesto_base\":1500000,\"fecha_vencimiento\":\"2026-12-31\"}" },
+        "body": { "mode": "raw", "raw": "{\"periodo\":\"{{periodoPrueba}}\",\"presupuesto_base\":1500000,\"fecha_vencimiento\":\"2098-12-31\"}" },
         "url": "{{baseUrl}}/api/cuotasAPI.php"
       }
+    },
+    {
+      "name": "RF-19 Repetir generación (debe generar cero)",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-19 no duplica apartamento y periodo', function () {",
+          "  pm.response.to.have.status(200);",
+          "  pm.expect(pm.response.json().generadas).to.eql(0);",
+          "});"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"periodo\":\"{{periodoPrueba}}\",\"presupuesto_base\":1500000,\"fecha_vencimiento\":\"2098-12-31\"}" },
+        "url": "{{baseUrl}}/api/cuotasAPI.php"
+      }
+    },
+    {
+      "name": "RF-20 Consultar saldo inicial de cuota",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-20 encuentra cuota pendiente para probar', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const apt = Number(pm.collectionVariables.get('apartamentoId'));",
+          "  const cuota = pm.response.json().find((item) => Number(item.apartamento_id) === apt);",
+          "  pm.expect(cuota, 'apartamento con saldo pendiente').to.exist;",
+          "  pm.collectionVariables.set('saldoAntes', cuota.saldo);",
+          "  pm.collectionVariables.set('cuotaId', cuota.cuota_id);",
+          "});"
+        ]}
+      }],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/pagos.php" }
     },
     {
       "name": "RF-20 Registrar abono parcial",
       "event": [{
         "listen": "test",
         "script": { "type": "text/javascript", "exec": [
-          "pm.test('Pago se aplica a una cuota', function () {",
+          "pm.test('RF-20 aplica el pago a la cuota más antigua', function () {",
           "  pm.response.to.have.status(201);",
-          "  pm.expect(pm.response.json().cuota_id).to.be.a('number');",
+          "  pm.expect(pm.response.json().cuota_id).to.eql(Number(pm.collectionVariables.get('cuotaId')));",
           "});"
         ]}
       }],
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": { "mode": "raw", "raw": "{\"apartamento_id\":{{apartamentoId}},\"fecha_pago\":\"2026-12-01\",\"valor\":1,\"medio\":\"Transferencia\",\"soporte\":\"RF20-Postman\"}" },
+        "body": { "mode": "raw", "raw": "{\"apartamento_id\":{{apartamentoId}},\"fecha_pago\":\"2026-11-08\",\"valor\":1,\"medio\":\"Transferencia\",\"soporte\":\"RF20-Postman\"}" },
         "url": "{{baseUrl}}/api/pagos.php"
       }
     },
     {
-      "name": "RF-21 Consultar estado de cuenta",
+      "name": "RF-20 Verificar saldo luego del trigger",
       "event": [{
         "listen": "test",
         "script": { "type": "text/javascript", "exec": [
-          "pm.test('Estado de cuenta devuelve saldo y mora', function () {",
+          "pm.test('RF-20 trigger descuenta el abono del saldo', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const apt = Number(pm.collectionVariables.get('apartamentoId'));",
+          "  const cuota = pm.response.json().find((item) => Number(item.apartamento_id) === apt);",
+          "  pm.expect(Number(cuota.cuota_id)).to.eql(Number(pm.collectionVariables.get('cuotaId')));",
+          "  pm.expect(Number(cuota.saldo)).to.eql(Number(pm.collectionVariables.get('saldoAntes')) - 1);",
+          "});"
+        ]}
+      }],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/pagos.php" }
+    },
+    {
+      "name": "RF-22 Publicar comunicado vigente",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-22 administrador publica comunicado vigente', function () {",
+          "  pm.response.to.have.status(201);",
+          "  pm.collectionVariables.set('comunicadoId', pm.response.json().id);",
+          "});"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"titulo\":\"Prueba regresión M5\",\"contenido\":\"Comunicado creado por Postman.\",\"vigente_hasta\":\"2098-12-31\"}" },
+        "url": "{{baseUrl}}/api/comunicados.php"
+      }
+    },
+    {
+      "name": "Login residente",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"correo\":\"{{residentEmail}}\",\"password\":\"{{residentPassword}}\"}" },
+        "url": "{{baseUrl}}/api/auth.php?action=login"
+      }
+    },
+    {
+      "name": "RF-21 Consultar cuenta (residente solo ve sus apartamentos)",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-21 limita cuenta y entrega torre, apartamento y residente', function () {",
           "  pm.response.to.have.status(200);",
           "  const rows = pm.response.json();",
-          "  if (rows.length) {",
-          "    pm.expect(rows[0]).to.have.property('saldo_total');",
-          "    pm.expect(rows[0]).to.have.property('cuotas_en_mora');",
-          "  }",
+          "  const permitidos = JSON.parse(pm.collectionVariables.get('residentApartmentIds'));",
+          "  pm.expect(rows.length).to.be.greaterThan(0);",
+          "  rows.forEach((row) => {",
+          "    pm.expect(permitidos).to.include(Number(row.apartamento_id));",
+          "    pm.expect(row).to.have.property('torre');",
+          "    pm.expect(row).to.have.property('apartamento');",
+          "    pm.expect(row).to.have.property('residentes');",
+          "    pm.expect(row).to.have.property('saldo_total');",
+          "    pm.expect(row).to.have.property('cuotas_en_mora');",
+          "  });",
           "});"
         ]}
       }],
@@ -80,20 +172,74 @@
       "event": [{
         "listen": "test",
         "script": { "type": "text/javascript", "exec": [
-          "pm.test('Comunicados contiene solo fechas de vigencia activas', function () {",
+          "pm.test('RF-22 lista comunicados con estado de lectura', function () {",
           "  pm.response.to.have.status(200);",
           "  pm.expect(pm.response.json()).to.be.an('array');",
+          "  pm.response.json().forEach((item) => {",
+          "    pm.expect(item).to.have.property('vigente_hasta');",
+          "    pm.expect(item).to.have.property('leido');",
+          "  });",
+          "});",
+          "const item = pm.response.json()[0];",
+          "if (item) pm.collectionVariables.set('comunicadoId', item.id);"
+        ]}
+      }],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/comunicados.php" }
+    },
+    {
+      "name": "RF-22 Marcar comunicado leído",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-22 la lectura repetida es exitosa e idempotente', function () {",
+          "  pm.response.to.have.status(200);",
+          "});"
+        ]}
+      }],
+      "request": { "method": "POST", "url": "{{baseUrl}}/api/comunicados.php?id={{comunicadoId}}" }
+    },
+    {
+      "name": "RF-22 Repetir marca (sin duplicar)",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-22 acepta lectura repetida sin duplicar', function () {",
+          "  pm.response.to.have.status(200);",
+          "});"
+        ]}
+      }],
+      "request": { "method": "POST", "url": "{{baseUrl}}/api/comunicados.php?id={{comunicadoId}}" }
+    },
+    {
+      "name": "RF-22 Verificar lectura persistida",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-22 comunica el estado leído al residente', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const item = pm.response.json().find((row) => Number(row.id) === Number(pm.collectionVariables.get('comunicadoId')));",
+          "  pm.expect(item).to.exist;",
+          "  pm.expect(Boolean(Number(item.leido))).to.eql(true);",
           "});"
         ]}
       }],
       "request": { "method": "GET", "url": "{{baseUrl}}/api/comunicados.php" }
     },
     {
-      "name": "RF-23 Consultar tablero",
+      "name": "Login administrador para RF-23",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"correo\":\"{{adminEmail}}\",\"password\":\"{{adminPassword}}\"}" },
+        "url": "{{baseUrl}}/api/auth.php?action=login"
+      }
+    },
+    {
+      "name": "RF-23 Consultar indicadores del tablero",
       "event": [{
         "listen": "test",
         "script": { "type": "text/javascript", "exec": [
-          "pm.test('Tablero incluye todos los indicadores', function () {",
+          "pm.test('RF-23 devuelve las cuatro métricas numéricas', function () {",
           "  pm.response.to.have.status(200);",
           "  const data = pm.response.json();",
           "  ['porcentaje_cartera','pqrs_abiertas','reservas_semana','visitantes_hoy'].forEach((key) => pm.expect(data[key]).to.be.a('number'));",

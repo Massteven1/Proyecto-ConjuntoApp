@@ -9,6 +9,8 @@ export interface EstadoCuenta {
   cuotas_pendientes: number;
   cuotas_en_mora: number;
   saldo_total: string;
+  valor_pagado_total: string;
+  residentes: string | null;
 }
 
 @Injectable({ providedIn: 'root' })

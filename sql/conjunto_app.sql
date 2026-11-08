@@ -39,6 +39,7 @@ CREATE PROCEDURE `sp_generar_cuotas` (IN `p_periodo` CHAR(7), IN `p_presupuesto_
         SELECT 1 FROM cuotas c 
         WHERE c.apartamento_id = a.id AND c.periodo = p_periodo COLLATE utf8mb4_unicode_ci
     );
+    SELECT ROW_COUNT() AS generadas;
 END$$
 
 DELIMITER ;

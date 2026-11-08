@@ -3,10 +3,10 @@
   @if (error()) { <p role="alert">{{ error() }}</p> }
   <div class="tabla">
     <table>
-      <thead><tr><th>Torre</th><th>Apartamento</th><th>Cuotas pendientes</th><th>Cuotas en mora</th><th>Saldo total</th></tr></thead>
+      <thead><tr><th>Torre</th><th>Apartamento</th><th>Residente(s)</th><th>Cuotas pendientes</th><th>Cuotas en mora</th><th>Saldo total</th><th>Total pagado</th></tr></thead>
       <tbody>
         @for (cuenta of cuentas(); track cuenta.apartamento_id) {
-          <tr><td>{{ cuenta.torre }}</td><td>{{ cuenta.apartamento }}</td><td>{{ cuenta.cuotas_pendientes }}</td><td>{{ cuenta.cuotas_en_mora }}</td><td>{{ cuenta.saldo_total }}</td></tr>
+          <tr><td>{{ cuenta.torre }}</td><td>{{ cuenta.apartamento }}</td><td>{{ cuenta.residentes || 'Sin residente activo' }}</td><td>{{ cuenta.cuotas_pendientes }}</td><td>{{ cuenta.cuotas_en_mora }}</td><td>{{ cuenta.saldo_total }}</td><td>{{ cuenta.valor_pagado_total }}</td></tr>
         }
       </tbody>
     </table>
