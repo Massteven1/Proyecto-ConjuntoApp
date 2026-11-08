@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService, AuthUser } from '../../services/auth';
-import { Comunicado, ComunicadosService } from '../../services/comunicados.service';
+import { Comunicado, ComunicadosService } from '../../services/comunicados';
 
 @Component({
   selector: 'app-comunicados',

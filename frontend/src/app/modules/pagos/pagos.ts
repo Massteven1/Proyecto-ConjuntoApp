@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { PagosService, PagoCuota } from '../../services/pagos.service';
+import { PagosService, PagoCuota } from '../../services/pagos';
 
 @Component({
   selector: 'app-pagos',

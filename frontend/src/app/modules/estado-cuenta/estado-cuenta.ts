@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { EstadoCuenta, EstadoCuentaService } from '../../services/estado-cuenta.service';
+import { EstadoCuenta, EstadoCuentaService } from '../../services/estado-cuenta';
 
 @Component({
   selector: 'app-estado-cuenta',

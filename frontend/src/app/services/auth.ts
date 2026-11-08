@@ -19,7 +19,7 @@ interface AuthResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly endpoint = '/api/auth.php';
+  private readonly endpoint = 'http://localhost:8000/backend/api/auth.php';
   private readonly requestTimeout = 8000;
 
   login(correo: string, password: string): Observable<AuthResponse> {
