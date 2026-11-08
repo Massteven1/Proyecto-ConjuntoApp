@@ -1,6 +1,6 @@
 # Proyecto-ConjuntoApp
 
-Aplicación web para administrar un conjunto residencial de Pereira con 4 torres y 120 apartamentos. El proyecto está dividido en:
+Aplicación web para administrar un conjunto residencial de Pereira con 4 torres y hasta 40 apartamentos (máximo 10 por torre). El proyecto está dividido en:
 
 - **Frontend:** Angular, dentro de `frontend/`.
 - **Backend:** PHP, dentro de `backend/`.

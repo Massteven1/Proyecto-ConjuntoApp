@@ -66,6 +66,52 @@ try {
     respond(500, ['message' => 'No fue posible conectar con la base de datos.']);
 }
 
+if ($action === 'profile' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    session_start();
+    $userId = (int) ($_SESSION['user']['id'] ?? 0);
+    if ($userId < 1) {
+        respond(401, ['message' => 'Debe iniciar sesión.']);
+    }
+    $query = $pdo->prepare(
+        'SELECT u.id, u.nombres, u.apellidos, u.documento, u.correo, u.telefono, r.nombre AS rol
+         FROM usuarios u INNER JOIN roles r ON r.id = u.rol_id
+         WHERE u.id = :id AND u.activo = 1 LIMIT 1'
+    );
+    $query->execute(['id' => $userId]);
+    $profile = $query->fetch();
+    if (!$profile) {
+        respond(401, ['message' => 'La cuenta no está activa.']);
+    }
+    respond(200, ['message' => 'Perfil cargado.', 'user' => $profile]);
+}
+
+if ($action === 'change-password' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    session_start();
+    $userId = (int) ($_SESSION['user']['id'] ?? 0);
+    if ($userId < 1) {
+        respond(401, ['message' => 'Debe iniciar sesión.']);
+    }
+    $data = requestData();
+    $currentPassword = (string) ($data['current_password'] ?? '');
+    $newPassword = (string) ($data['new_password'] ?? '');
+    if (strlen($newPassword) < 8) {
+        respond(422, ['message' => 'La nueva contraseña debe tener al menos 8 caracteres.']);
+    }
+    $query = $pdo->prepare('SELECT password_hash FROM usuarios WHERE id = :id AND activo = 1 LIMIT 1');
+    $query->execute(['id' => $userId]);
+    $passwordHash = $query->fetchColumn();
+    if ($passwordHash === false || !password_verify($currentPassword, (string) $passwordHash)) {
+        respond(422, ['message' => 'La contraseña actual no es correcta.']);
+    }
+    $update = $pdo->prepare('UPDATE usuarios SET password_hash = :password_hash WHERE id = :id');
+    $update->execute([
+        'password_hash' => password_hash($newPassword, PASSWORD_DEFAULT),
+        'id' => $userId,
+    ]);
+    session_regenerate_id(true);
+    respond(200, ['message' => 'La contraseña se cambió correctamente.']);
+}
+
 if ($action === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = requestData();
     $nombres = trim((string) ($data['nombres'] ?? ''));

@@ -1,0 +1,37 @@
+<main class="pagina">
+  <nav><a routerLink="/inicio">Inicio</a></nav>
+  <header><p class="eyebrow">Administración</p><h1>Residentes y apartamentos</h1><p>Asigna un responsable por apartamento en cada periodo.</p></header>
+  @if (mensaje) { <p class="mensaje" [class.error]="error" role="status">{{ mensaje }}</p> }
+  <section class="panel">
+    <h2>{{ editandoId === null ? 'Nueva asociación' : 'Editar asociación' }}</h2>
+    <form (ngSubmit)="guardar()">
+      <label>Residente<select name="usuario" [(ngModel)]="formulario.usuario_id" required>
+        @for (residente of residentes; track residente.id) { <option [ngValue]="residente.id">{{ residente.nombres }} {{ residente.apellidos }}</option> }
+      </select></label>
+      <label>Apartamento<select name="apartamento" [(ngModel)]="formulario.apartamento_id" required>
+        @for (apartamento of apartamentos; track apartamento.id) { <option [ngValue]="apartamento.id">{{ apartamento.torre }} - {{ apartamento.numero }}</option> }
+      </select></label>
+      <label>Tipo<select name="tipo" [(ngModel)]="formulario.tipo" required>
+        <option value="propietario">Propietario</option><option value="arrendatario">Arrendatario</option>
+      </select></label>
+      <label>Fecha de inicio<input name="fechaInicio" type="date" [(ngModel)]="formulario.fecha_inicio" required /></label>
+      <label>Fecha de fin<input name="fechaFin" type="date" [(ngModel)]="formulario.fecha_fin" /></label>
+      <div class="acciones"><button type="submit">{{ editandoId === null ? 'Asociar residente' : 'Guardar cambios' }}</button>
+        @if (editandoId !== null) { <button class="secundario" type="button" (click)="cancelarEdicion()">Cancelar</button> }
+      </div>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>Asociaciones registradas</h2>
+    @if (cargando) { <p>Cargando asociaciones</p> }
+    @else if (residencias.length === 0) { <p>No hay asociaciones registradas.</p> }
+    @else { <div class="tabla"><table>
+      <thead><tr><th>Responsable</th><th>Apartamento</th><th>Tipo</th><th>Desde</th><th>Hasta</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody>@for (residencia of residencias; track residencia.id) {
+        <tr><td>{{ residencia.nombres }} {{ residencia.apellidos }}</td><td>{{ residencia.torre }} - {{ residencia.apartamento }}</td>
+          <td>{{ residencia.tipo }}</td><td>{{ residencia.fecha_inicio }}</td><td>{{ residencia.fecha_fin || 'Sin fecha de fin' }}</td>
+          <td>{{ vigente(residencia) ? 'Vigente' : 'Finalizada' }}</td><td><button class="secundario" type="button" (click)="editar(residencia)">Editar</button></td></tr>
+      }</tbody>
+    </table></div> }
+  </section>
+</main>
