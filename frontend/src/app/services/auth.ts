@@ -8,6 +8,8 @@ export interface AuthUser {
   apellidos: string;
   correo: string;
   rol: string;
+  documento?: string;
+  telefono?: string | null;
 }
 
 interface AuthResponse {
@@ -31,6 +33,21 @@ export class AuthService {
   currentUser(): Observable<AuthResponse> {
     return this.http
       .get<AuthResponse>(`${this.endpoint}?action=me`, { withCredentials: true })
+      .pipe(timeout({ first: this.requestTimeout }));
+  }
+
+  profile(): Observable<AuthResponse> {
+    return this.http
+      .get<AuthResponse>(`${this.endpoint}?action=profile`, { withCredentials: true })
+      .pipe(timeout({ first: this.requestTimeout }));
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.endpoint}?action=change-password`, {
+        current_password: currentPassword,
+        new_password: newPassword,
+      }, { withCredentials: true })
       .pipe(timeout({ first: this.requestTimeout }));
   }
 

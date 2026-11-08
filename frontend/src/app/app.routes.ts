@@ -11,6 +11,11 @@ import { EstadoCuentaComponent } from './modules/estado-cuenta/estado-cuenta';
 import { Comunicados } from './modules/comunicados/comunicados';
 import { Reservas } from './modules/reservas/reservas';
 import { Tablero } from './modules/tablero/tablero';
+import { Usuarios } from './modules/usuarios/usuarios';
+import { Inmuebles } from './modules/inmuebles/inmuebles';
+import { Residencias } from './modules/residencias/residencias';
+import { Perfil } from './modules/perfil/perfil';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -26,5 +31,10 @@ export const routes: Routes = [
   { path: 'estado-cuenta', component: EstadoCuentaComponent, title: 'Estado de cuenta' },
   { path: 'comunicados', component: Comunicados, title: 'Comunicados' },
   { path: 'tablero', component: Tablero, title: 'Tablero' },
+  { path: 'usuarios', component: Usuarios, title: 'Usuarios' },
+  { path: 'inmuebles', component: Inmuebles, title: 'Torres y apartamentos' },
+  { path: 'residencias', component: Residencias, title: 'Residentes y apartamentos' },
+  { path: 'perfil', component: Perfil, title: 'Mi perfil' },
+
   { path: '**', redirectTo: 'login' },
 ];

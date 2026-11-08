@@ -1,0 +1,19 @@
+:host { display: block; min-height: 100vh; padding: 2rem; color: #182d25; background: #f4f7f4; }
+.pagina { max-width: 1100px; margin: 0 auto; }
+a, .eyebrow { color: #286547; }
+header { margin: 1.5rem 0; }
+h1, h2, p { margin-top: 0; }
+.panel { margin: 1rem 0; padding: 1.5rem; border: 1px solid #dce5de; border-radius: 10px; background: #fff; }
+form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+label { display: grid; gap: .4rem; font-weight: 600; }
+input, select { width: 100%; min-height: 40px; padding: .5rem; border: 1px solid #aebdb2; border-radius: 5px; color: inherit; font: inherit; }
+.acciones, .acciones-fila { display: flex; align-items: center; gap: .5rem; }
+.acciones { grid-column: 1 / -1; }
+button { min-height: 38px; padding: .45rem .8rem; border: 0; border-radius: 5px; color: #fff; background: #286547; font: inherit; cursor: pointer; }
+button.secundario { border: 1px solid #aebdb2; color: #244535; background: #fff; }
+.tabla { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: .7rem; border-bottom: 1px solid #e1e8e2; text-align: left; white-space: nowrap; }
+.mensaje { color: #286547; }
+.mensaje.error { color: #a23f37; }
+@media (max-width: 600px) { :host { padding: 1rem; } .panel { padding: 1rem; } }
