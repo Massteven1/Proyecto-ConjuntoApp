@@ -1,0 +1,20 @@
+<section>
+  <h2>Registrar pago</h2>
+  <form (ngSubmit)="registrar()">
+    <label>Apartamento / cuota más antigua
+      <select name="apartamento" [(ngModel)]="apartamento_id" required>
+        <option [ngValue]="null" disabled>Seleccione</option>
+        @for (cuota of cuotas(); track cuota.cuota_id) {
+          <option [ngValue]="cuota.apartamento_id">{{ cuota.torre }} - {{ cuota.apartamento }} ({{ cuota.periodo }}, saldo {{ cuota.saldo }})</option>
+        }
+      </select>
+    </label>
+    <label>Fecha <input type="date" name="fecha" [(ngModel)]="fecha_pago" required></label>
+    <label>Valor <input type="number" name="valor" [(ngModel)]="valor" min="0.01" step="0.01" required></label>
+    <label>Medio <input name="medio" [(ngModel)]="medio" required maxlength="50"></label>
+    <label>Soporte (URL o referencia) <input name="soporte" [(ngModel)]="soporte" maxlength="255"></label>
+    <button type="submit">Registrar pago</button>
+  </form>
+  @if (error()) { <p role="alert">{{ error() }}</p> }
+  @if (mensaje()) { <p role="status">{{ mensaje() }}</p> }
+</section>

@@ -1,0 +1,34 @@
+{
+  "info": {
+    "name": "ConjuntoApp - RF-21 Estado de cuenta",
+    "description": "Autentique una sesión de residente y verifique que solo reciba sus apartamentos. Con sesión de administrador debe listar todos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Consultar estado de cuenta",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Devuelve saldo y mora por apartamento', function () {",
+              "  pm.response.to.have.status(200);",
+              "  const rows = pm.response.json();",
+              "  if (rows.length) {",
+              "    pm.expect(rows[0]).to.have.property('saldo_total');",
+              "    pm.expect(rows[0]).to.have.property('cuotas_en_mora');",
+              "  }",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8000/api/estadoCuenta.php"
+      }
+    }
+  ]
+}

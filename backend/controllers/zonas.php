@@ -1,19 +1,11 @@
 <?php
-header('Access-Control-Allow-Origin: http://localhost:4200');
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+require_once __DIR__ . '/../cors.php';
 header('Content-Type: application/json; charset=utf-8');
 
 function responder(int $status, array $respuesta): void
 {
     http_response_code($status);
     echo json_encode($respuesta, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
     exit;
 }
 

@@ -1,0 +1,29 @@
+<main>
+  <h1>Tablero de administración</h1>
+  @if (error()) {
+    <p role="alert">{{ error() }}</p>
+  } @else if (resumen(); as datos) {
+    <section class="indicadores" aria-label="Indicadores del conjunto">
+      <article>
+        <h2>Cartera pendiente</h2>
+        <p>{{ datos.porcentaje_cartera }}%</p>
+        <small>Saldo pendiente sobre el valor total facturado</small>
+      </article>
+      <article>
+        <h2>PQRS abiertas</h2>
+        <p>{{ datos.pqrs_abiertas }}</p>
+        <small>Radicadas o en trámite</small>
+      </article>
+      <article>
+        <h2>Reservas de esta semana</h2>
+        <p>{{ datos.reservas_semana }}</p>
+      </article>
+      <article>
+        <h2>Visitantes de hoy</h2>
+        <p>{{ datos.visitantes_hoy }}</p>
+      </article>
+    </section>
+  } @else {
+    <p role="status">Cargando indicadores...</p>
+  }
+</main>

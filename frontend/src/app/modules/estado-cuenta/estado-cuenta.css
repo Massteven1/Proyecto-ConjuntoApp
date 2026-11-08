@@ -1,0 +1,4 @@
+section { margin: 2rem auto; max-width: 1000px; padding: 1rem; }
+.tabla { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid #ddd; padding: .7rem; text-align: left; }

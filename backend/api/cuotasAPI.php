@@ -1,19 +1,6 @@
 <?php
+require_once __DIR__ . '/../cors.php';
 header('Content-Type: application/json; charset=utf-8');
-// 1. Permitir explícitamente a tu frontend de Angular
-header("Access-Control-Allow-Origin: http://localhost:4200");
-
-// 2. Permitir los métodos HTTP que usa Angular
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-
-// 3. Permitir las cabeceras estándar que envía Angular (como Content-Type)
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-
-// 4. Responder inmediatamente a la petición de verificación previa (Preflight / OPTIONS)
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

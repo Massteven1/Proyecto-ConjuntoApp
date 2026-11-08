@@ -1,0 +1,43 @@
+{
+  "info": {
+    "name": "ConjuntoApp - RF-20 Pagos manuales",
+    "description": "Autentique primero una sesión de administrador. Pruebe el pago parcial de la cuota más antigua; la respuesta devuelve cuota_id y el saldo queda actualizado por el trigger.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Listar primera cuota pendiente por apartamento",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8000/api/pagos.php"
+      }
+    },
+    {
+      "name": "Registrar abono",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Pago aplicado a una cuota', function () {",
+              "  pm.response.to.have.status(201);",
+              "  pm.expect(pm.response.json().cuota_id).to.be.a('number');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"apartamento_id\": 1,\n  \"fecha_pago\": \"2026-11-05\",\n  \"valor\": 50000,\n  \"medio\": \"Transferencia\",\n  \"soporte\": \"REC-001\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "http://localhost:8000/api/pagos.php"
+      }
+    }
+  ]
+}

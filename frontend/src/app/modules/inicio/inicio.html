@@ -7,9 +7,11 @@
     <p>Inicio de sesión correcto.</p>
     <p>Bienvenido/a, <strong>{{ usuario.nombres }} {{ usuario.apellidos }}</strong>.</p>
     @if (usuario.rol === 'Administrador') {
+      <p><a routerLink="/tablero">Ver tablero de administración</a></p>
       <p><a routerLink="/usuarios">Administrar usuarios</a></p>
       <p><a routerLink="/inmuebles">Administrar torres y apartamentos</a></p>
       <p><a routerLink="/residencias">Asociar residentes a apartamentos</a></p>
+
       <p><a routerLink="/zonas">Administrar zonas comunes</a></p>
       <p><a routerLink="/reservas">Aprobar reservas</a></p>
     } @else if (usuario.rol === 'Residente') {
