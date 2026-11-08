@@ -57,6 +57,18 @@ El backend quedará disponible en [http://localhost:8000/](http://localhost:8000
 
 > El endpoint de autenticación está en `backend/api/auth.php`. Angular usa `frontend/proxy.conf.json` para enviar `/api` al servidor PHP. La conexión local está configurada para MariaDB en la base `conjunto_app`.
 
+### Cuentas de prueba
+
+Después de importar `sql/conjunto_app.sql`, puedes iniciar sesión con estas cuentas. Las tres usan la contraseña `prueba123`:
+
+| Rol | Correo | Contraseña |
+| --- | --- | --- |
+| Administrador | `admin1@conjunto.com` | `prueba123` |
+| Residente | `prueba@gmail.com` | `prueba123` |
+| Portero | `portero1@conjunto.com` | `prueba123` |
+
+Son credenciales para desarrollo local; no las uses en una instalación real.
+
 ### Gestión de zonas comunes
 
 Al iniciar sesión con un usuario Administrador, el inicio ofrece los enlaces para administrar zonas y aprobar reservas. Desde zonas se pueden crear, consultar, editar e inactivar espacios; desde reservas se revisan las solicitudes pendientes. Los residentes consultan la disponibilidad por fecha, solicitan reservas y cancelan con 24 horas de anticipación. Portería puede consultar las reservas aprobadas del día. El endpoint `backend/controllers/reservas.php` valida cruces, horario, apartamento asociado y cuotas vencidas. La base de datos ya incluye las tablas y campos necesarios; no hace falta ejecutar una migración.
