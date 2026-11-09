@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService, AuthUser } from '../../services/auth';
 
 @Component({
   selector: 'app-perfil',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
 })

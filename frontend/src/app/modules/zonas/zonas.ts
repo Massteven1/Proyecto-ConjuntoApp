@@ -2,14 +2,14 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth';
 import { DatosZona, ZonaComun, ZonasService } from '../../services/zonas';
 
 @Component({
   selector: 'app-zonas',
-  imports: [CurrencyPipe, FormsModule, RouterLink],
+  imports: [CurrencyPipe, FormsModule],
   templateUrl: './zonas.html',
   styleUrl: './zonas.css',
 })

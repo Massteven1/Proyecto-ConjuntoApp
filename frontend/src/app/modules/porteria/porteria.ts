@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AuthService, AuthUser } from '../../services/auth';
 import { PorteriaService } from '../../services/porteria';
 
 @Component({
   selector: 'app-porteria',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule],
   templateUrl: './porteria.html',
   styleUrl: './porteria.css',
 })

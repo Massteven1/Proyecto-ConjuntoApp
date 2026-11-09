@@ -1,6 +1,18 @@
 @if (visible) {
-  <nav>
-    <ul>
+  <nav class="rail" aria-label="Navegación principal">
+    <div class="rail__marca">
+      <a class="marca" routerLink="/inicio">ConjuntoApp</a>
+      <p class="marca__sub">Administración de propiedad horizontal</p>
+    </div>
+
+    @if (usuario) {
+      <div class="rail__rol">
+        <p class="rol__nombre">{{ usuario.nombres }} {{ usuario.apellidos }}</p>
+        <p class="rol__etiqueta">{{ usuario.rol }}</p>
+      </div>
+    }
+
+    <ul class="rail__menu">
       <li><a routerLink="/inicio" routerLinkActive="activo">Inicio</a></li>
 
       @if (esResidente) {
@@ -16,7 +28,7 @@
         <li><a routerLink="/usuarios" routerLinkActive="activo">Usuarios</a></li>
         <li><a routerLink="/inmuebles" routerLinkActive="activo">Inmuebles</a></li>
         <li><a routerLink="/residencias" routerLinkActive="activo">Residencias</a></li>
-        <li><a routerLink="/zonas" routerLinkActive="activo">Zonas</a></li>
+        <li><a routerLink="/zonas" routerLinkActive="activo">Zonas comunes</a></li>
       }
 
       <li><a routerLink="/reservas" routerLinkActive="activo">Reservas</a></li>
@@ -31,11 +43,11 @@
         <li><a routerLink="/comunicados" routerLinkActive="activo">Comunicados</a></li>
       }
 
-      <li><a routerLink="/perfil" routerLinkActive="activo">Perfil</a></li>
-
-      <li>
-        <button type="button" class="cerrar-sesion" (click)="cerrarSesion()">Cerrar sesión</button>
-      </li>
+      <li><a routerLink="/perfil" routerLinkActive="activo">Mi perfil</a></li>
     </ul>
+
+    <div class="rail__pie">
+      <button class="salir" type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
   </nav>
 }

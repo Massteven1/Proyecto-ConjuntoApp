@@ -1,23 +1,44 @@
-<main>
-  <a class="brand" routerLink="/login">ConjuntoApp</a>
-  <h1>Iniciar sesión</h1>
-  <form (ngSubmit)="onSubmit()">
-    <p>
-      <label for="correo">Correo electrónico<br />
-        <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="email" required />
-      </label>
-    </p>
-    <p>
-      <label for="password">Contraseña<br />
-        <input id="password" name="password" type="password" [(ngModel)]="password" autocomplete="current-password" required />
-      </label>
-    </p>
-    <button class="submit-button" type="submit" [disabled]="cargando">
-      {{ cargando ? 'Ingresando…' : 'Iniciar sesión' }}
-    </button>
-  </form>
-  @if (mensaje) {
-    <p class="status-message" [class.error]="error" role="status">{{ mensaje }}</p>
-  }
-  <p>¿No tienes una cuenta? <a routerLink="/registro">Regístrate</a></p>
+<main class="acceso">
+  <section class="acceso__portada" aria-label="ConjuntoApp">
+    <a class="marca-acceso" routerLink="/login">ConjuntoApp</a>
+
+    <div class="portada__cuerpo">
+      <p class="portada__bajada">Administración de propiedad horizontal · Pereira</p>
+      <ul class="torres">
+        <li><span class="torres__nombre">Torre A</span><span class="torres__detalle">10 apartamentos</span></li>
+        <li><span class="torres__nombre">Torre B</span><span class="torres__detalle">10 apartamentos</span></li>
+        <li><span class="torres__nombre">Torre C</span><span class="torres__detalle">10 apartamentos</span></li>
+        <li><span class="torres__nombre">Torre D</span><span class="torres__detalle">10 apartamentos</span></li>
+      </ul>
+    </div>
+
+    <p class="portada__pie">Cuatro torres · 40 apartamentos · 8 pisos por torre</p>
+  </section>
+
+  <section class="acceso__panel">
+    <div class="acceso__formulario">
+      <h1>Iniciar sesión</h1>
+      <p class="bajada">Accede con el correo registrado en el conjunto.</p>
+
+      <form (ngSubmit)="onSubmit()">
+        <label for="correo">Correo electrónico
+          <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="email" required />
+        </label>
+
+        <label for="password">Contraseña
+          <input id="password" name="password" type="password" [(ngModel)]="password" autocomplete="current-password" required />
+        </label>
+
+        <button class="submit-button" type="submit" [disabled]="cargando">
+          {{ cargando ? 'Ingresando…' : 'Iniciar sesión' }}
+        </button>
+      </form>
+
+      @if (mensaje) {
+        <p class="status-message" [class.error]="error" role="status">{{ mensaje }}</p>
+      }
+
+      <p class="acceso__enlace">¿No tienes una cuenta? <a routerLink="/registro">Regístrate</a></p>
+    </div>
+  </section>
 </main>

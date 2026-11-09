@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { Apartamento, DatosApartamento, DatosTorre, InmueblesService, Torre } from '../../services/inmuebles';
 
 @Component({
   selector: 'app-inmuebles',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule],
   templateUrl: './inmuebles.html',
   styleUrl: './inmuebles.css',
 })

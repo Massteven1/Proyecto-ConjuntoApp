@@ -1,12 +1,19 @@
 <main class="pagina">
-  <nav><a routerLink="/inicio">Inicio</a></nav>
-  <header><p class="eyebrow">Cuenta</p><h1>Mi perfil</h1></header>
+  <header class="encabezado">
+    <p class="eyebrow">Cuenta</p>
+    <h1>Mi perfil</h1>
+    <p class="bajada">Consulta tus datos personales y cambia la contraseña de acceso.</p>
+  </header>
+
   @if (cargando) { <p>Cargando perfil</p> }
   @else if (usuario) {
     <section class="panel">
       <h2>Datos personales</h2>
+      <div class="perfil__identidad">
+        <div class="perfil__mono" aria-hidden="true">{{ (usuario.nombres?.charAt(0) || '') + (usuario.apellidos?.charAt(0) || '') }}</div>
+        <p class="perfil__nombre">{{ usuario.nombres }} {{ usuario.apellidos }}</p>
+      </div>
       <dl>
-        <dt>Nombre</dt><dd>{{ usuario.nombres }} {{ usuario.apellidos }}</dd>
         <dt>Documento</dt><dd>{{ usuario.documento || 'No registrado' }}</dd>
         <dt>Correo</dt><dd>{{ usuario.correo }}</dd>
         <dt>Teléfono</dt><dd>{{ usuario.telefono || 'No registrado' }}</dd>
@@ -15,11 +22,11 @@
     </section>
     <section class="panel">
       <h2>Cambiar contraseña</h2>
-      <form (ngSubmit)="cambiarContrasena()">
+      <form class="perfil__cambio" (ngSubmit)="cambiarContrasena()">
         <label>Contraseña actual<input name="actual" type="password" [(ngModel)]="actual" autocomplete="current-password" required /></label>
         <label>Nueva contraseña<input name="nueva" type="password" [(ngModel)]="nueva" autocomplete="new-password" minlength="8" required /></label>
         <label>Confirmar nueva contraseña<input name="confirmar" type="password" [(ngModel)]="confirmar" autocomplete="new-password" minlength="8" required /></label>
-        <button type="submit" [disabled]="guardando">{{ guardando ? 'Guardando' : 'Cambiar contraseña' }}</button>
+        <div class="acciones"><button type="submit" [disabled]="guardando">{{ guardando ? 'Guardando' : 'Cambiar contraseña' }}</button></div>
       </form>
       @if (mensaje) { <p class="mensaje" [class.error]="error" role="status">{{ mensaje }}</p> }
     </section>

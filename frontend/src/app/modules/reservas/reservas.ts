@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AuthService, AuthUser } from '../../services/auth';
 import {
@@ -17,7 +17,7 @@ import {
 
 @Component({
   selector: 'app-reservas',
-  imports: [CurrencyPipe, FormsModule, RouterLink],
+  imports: [CurrencyPipe, FormsModule],
   templateUrl: './reservas.html',
   styleUrl: './reservas.css',
 })

@@ -1,177 +1,225 @@
-<p>
-  <a routerLink="/inicio">Inicio</a> |
-  <a routerLink="/visitantes">Visitantes</a> |
-  <a routerLink="/reservas">Reservas de hoy</a>
-</p>
-
-<h1>Porteria</h1>
-
-@if (usuario) {
-  <p>Portero: {{ usuario.nombres }} {{ usuario.apellidos }}</p>
-}
-
-<form (ngSubmit)="buscar()">
-  <label for="documento">Documento del visitante</label>
-  <input id="documento" name="documento" type="text" [(ngModel)]="documento" />
-  <button type="submit">Buscar</button>
-</form>
-
-@if (resultado) {
-  <dl>
-    <dt>Nombre</dt>
-    <dd>{{ resultado.nombre }}</dd>
-
-    <dt>Documento</dt>
-    <dd>{{ resultado.documento }}</dd>
-
-    <dt>Apartamento</dt>
-    <dd>{{ resultado.torre }} - {{ resultado.apartamento }}</dd>
-
-    <dt>Fecha de autorizacion</dt>
-    <dd>{{ resultado.fecha_visita }}</dd>
-
-    <dt>Vehiculo</dt>
-    <dd>{{ resultado.con_vehiculo == 1 ? 'Si' : 'No' }}</dd>
-
-    <dt>Placa</dt>
-    <dd>{{ resultado.placa }}</dd>
-
-    <dt>Estado</dt>
-    <dd>{{ resultado.dentro == 1 ? 'Dentro' : 'Fuera' }}</dd>
-  </dl>
-
-  <button type="button" (click)="ingresar()">Registrar ingreso</button>
-  <button type="button" (click)="salir()">Registrar salida</button>
-
-  @if (resultado.con_vehiculo == 1 && resultado.dentro == 0) {
-    <p>
-      <label for="parqueadero">Parqueadero de visitantes</label>
-      <select id="parqueadero" name="parqueadero" [(ngModel)]="parqueaderoId">
-        <option [ngValue]="0">Sin parqueadero</option>
-        @for (p of parqueaderosLibres; track p.id) {
-          <option [ngValue]="p.id">{{ p.codigo }}</option>
-        }
-      </select>
-    </p>
-  }
-}
-
-<p>{{ mensaje }}</p>
-
-<h2>Visitantes dentro</h2>
-
-@if (dentro.length > 0) {
-  <table>
-    <thead>
-      <tr>
-        <th>Visitante</th>
-        <th>Documento</th>
-        <th>Apartamento</th>
-        <th>Torre</th>
-        <th>Placa</th>
-        <th>Fecha ingreso</th>
-        <th>Portero</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (d of dentro; track d.id) {
-        <tr>
-          <td>{{ d.visitante }}</td>
-          <td>{{ d.documento }}</td>
-          <td>{{ d.apartamento }}</td>
-          <td>{{ d.torre }}</td>
-          <td>{{ d.placa }}</td>
-          <td>{{ d.fecha_ingreso }}</td>
-          <td>{{ d.portero }}</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-}
-
-@if (dentro.length == 0) {
-  <p>No hay visitantes dentro</p>
-}
-
-<h2>Parqueaderos de visitantes</h2>
-
-<form (ngSubmit)="agregarParqueadero()">
-  <label for="nuevoParqueadero">Codigo del parqueadero</label>
-  <input id="nuevoParqueadero" name="nuevoParqueadero" type="text" [(ngModel)]="nuevoParqueadero" />
-  <button type="submit">Agregar</button>
-</form>
-
-<table>
-  <thead>
-    <tr>
-      <th>Codigo</th>
-      <th>Estado</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (p of parqueaderos; track p.id) {
-      <tr>
-        <td>{{ p.codigo }}</td>
-        <td>{{ p.ocupado == 1 ? 'Ocupado' : 'Libre' }}</td>
-        <td>
-          <button type="button" (click)="editarParqueadero(p)">Editar</button>
-          <button type="button" (click)="eliminarParqueadero(p)">Eliminar</button>
-        </td>
-      </tr>
+<main class="pagina">
+  <header class="encabezado">
+    <p class="eyebrow">Control de acceso</p>
+    <h1>Portería</h1>
+    @if (usuario) {
+      <p class="bajada">Turno de {{ usuario.nombres }} {{ usuario.apellidos }} · {{ usuario.rol }}</p>
+    } @else {
+      <p class="bajada">Registra ingresos y salidas de visitantes del conjunto.</p>
     }
-  </tbody>
-</table>
+  </header>
 
-<h2>Bitacora de ingresos</h2>
+  <section class="panel" aria-labelledby="buscar-titulo">
+    <h2 id="buscar-titulo">Buscar visitante</h2>
+    <form class="form-rejilla" (ngSubmit)="buscar()">
+      <label for="documento">Documento del visitante
+        <input id="documento" name="documento" type="text" [(ngModel)]="documento" autocomplete="off" />
+      </label>
+      <div class="acciones">
+        <button type="submit">Buscar</button>
+      </div>
+    </form>
 
-<form (ngSubmit)="cargarBitacora()">
-  <label for="fecha">Fecha</label>
-  <input id="fecha" name="fecha" type="date" [(ngModel)]="filtros.fecha" />
+    @if (resultado) {
+      <div class="resultado">
+        <dl>
+          <dt>Nombre</dt>
+          <dd>{{ resultado.nombre }}</dd>
 
-  <label for="torre">Torre</label>
-  <input id="torre" name="torre" type="text" [(ngModel)]="filtros.torre" />
+          <dt>Documento</dt>
+          <dd>{{ resultado.documento }}</dd>
 
-  <label for="apartamento">Apartamento</label>
-  <input id="apartamento" name="apartamento" type="text" [(ngModel)]="filtros.apartamento" />
+          <dt>Apartamento</dt>
+          <dd>{{ resultado.torre }} - {{ resultado.apartamento }}</dd>
 
-  <button type="submit">Filtrar</button>
-  <button type="button" (click)="limpiarFiltros()">Limpiar</button>
-</form>
+          <dt>Fecha de autorización</dt>
+          <dd>{{ resultado.fecha_visita }}</dd>
 
-@if (bitacora.length > 0) {
-  <table>
-    <thead>
-      <tr>
-        <th>Visitante</th>
-        <th>Documento</th>
-        <th>Torre</th>
-        <th>Apartamento</th>
-        <th>Parqueadero</th>
-        <th>Ingreso</th>
-        <th>Salida</th>
-        <th>Estado</th>
-        <th>Portero</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (b of bitacora; track b.id) {
-        <tr>
-          <td>{{ b.visitante }}</td>
-          <td>{{ b.documento }}</td>
-          <td>{{ b.torre }}</td>
-          <td>{{ b.apartamento }}</td>
-          <td>{{ b.parqueadero }}</td>
-          <td>{{ b.fecha_ingreso }}</td>
-          <td>{{ b.fecha_salida }}</td>
-          <td>{{ b.estado }}</td>
-          <td>{{ b.portero }}</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-}
+          <dt>Vehículo</dt>
+          <dd>{{ resultado.con_vehiculo == 1 ? 'Sí' : 'No' }}</dd>
 
-@if (bitacora.length == 0) {
-  <p>No hay ingresos para los filtros seleccionados</p>
-}
+          <dt>Placa</dt>
+          <dd>{{ resultado.placa || '—' }}</dd>
+
+          <dt>Estado</dt>
+          <dd>
+            <span class="estado" [class.estado--dentro]="resultado.dentro == 1"
+                  [class.estado--pendiente]="resultado.dentro != 1">
+              {{ resultado.dentro == 1 ? 'Dentro' : 'Fuera' }}
+            </span>
+          </dd>
+        </dl>
+
+        @if (resultado.con_vehiculo == 1 && resultado.dentro == 0) {
+          <label class="resultado__parqueadero" for="parqueadero">Parqueadero de visitantes
+            <select id="parqueadero" name="parqueadero" [(ngModel)]="parqueaderoId">
+              <option [ngValue]="0">Sin parqueadero</option>
+              @for (p of parqueaderosLibres; track p.id) {
+                <option [ngValue]="p.id">{{ p.codigo }}</option>
+              }
+            </select>
+          </label>
+        }
+
+        <div class="acciones acciones--resultado">
+          <button type="button" (click)="ingresar()" [disabled]="resultado.dentro == 1">Registrar ingreso</button>
+          <button type="button" class="secundario" (click)="salir()" [disabled]="resultado.dentro != 1">Registrar salida</button>
+        </div>
+      </div>
+    }
+
+    @if (mensaje) {
+      <p class="mensaje" [class.error]="error" role="status">{{ mensaje }}</p>
+    }
+  </section>
+
+  <section class="seccion" aria-labelledby="dentro-titulo">
+    <h2 id="dentro-titulo" class="seccion__titulo">Visitantes dentro</h2>
+
+    @if (dentro.length > 0) {
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
+            <tr>
+              <th>Visitante</th>
+              <th>Documento</th>
+              <th>Torre</th>
+              <th>Apartamento</th>
+              <th>Placa</th>
+              <th>Ingreso</th>
+              <th>Portero</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (d of dentro; track d.id) {
+              <tr>
+                <td>{{ d.visitante }}</td>
+                <td>{{ d.documento }}</td>
+                <td>{{ d.torre }}</td>
+                <td>{{ d.apartamento }}</td>
+                <td>{{ d.placa || '—' }}</td>
+                <td>{{ d.fecha_ingreso }}</td>
+                <td>{{ d.portero }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="vacio">No hay visitantes dentro del conjunto.</p>
+    }
+  </section>
+
+  <section class="seccion" aria-labelledby="parqueaderos-titulo">
+    <h2 id="parqueaderos-titulo" class="seccion__titulo">Parqueaderos de visitantes</h2>
+
+    <form class="form-rejilla" (ngSubmit)="agregarParqueadero()">
+      <label for="nuevoParqueadero">Código del parqueadero
+        <input id="nuevoParqueadero" name="nuevoParqueadero" type="text" [(ngModel)]="nuevoParqueadero" />
+      </label>
+      <div class="acciones">
+        <button type="submit">Agregar</button>
+      </div>
+    </form>
+
+    @if (parqueaderos.length > 0) {
+      <div class="tabla-contenedor tabla-contenedor--separada">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Estado</th>
+              <th class="numerico">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of parqueaderos; track p.id) {
+              <tr>
+                <td>{{ p.codigo }}</td>
+                <td>
+                  <span class="estado" [class.estado--ocupado]="p.ocupado == 1"
+                        [class.estado--libre]="p.ocupado != 1">
+                    {{ p.ocupado == 1 ? 'Ocupado' : 'Libre' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="acciones-fila">
+                    <button type="button" class="secundario" (click)="editarParqueadero(p)">Editar</button>
+                    <button type="button" class="peligro" (click)="eliminarParqueadero(p)">Eliminar</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="vacio">Todavía no hay parqueaderos de visitantes registrados.</p>
+    }
+  </section>
+
+  <section class="seccion" aria-labelledby="bitacora-titulo">
+    <h2 id="bitacora-titulo" class="seccion__titulo">Bitácora de ingresos</h2>
+
+    <form class="form-rejilla filtros" (ngSubmit)="cargarBitacora()">
+      <label for="fecha">Fecha
+        <input id="fecha" name="fecha" type="date" [(ngModel)]="filtros.fecha" />
+      </label>
+
+      <label for="torre">Torre
+        <input id="torre" name="torre" type="text" [(ngModel)]="filtros.torre" />
+      </label>
+
+      <label for="apartamento">Apartamento
+        <input id="apartamento" name="apartamento" type="text" [(ngModel)]="filtros.apartamento" />
+      </label>
+
+      <div class="acciones">
+        <button type="submit">Filtrar</button>
+        <button type="button" class="secundario" (click)="limpiarFiltros()">Limpiar</button>
+      </div>
+    </form>
+
+    @if (bitacora.length > 0) {
+      <div class="tabla-contenedor tabla-contenedor--separada">
+        <table>
+          <thead>
+            <tr>
+              <th>Visitante</th>
+              <th>Documento</th>
+              <th>Torre</th>
+              <th>Apartamento</th>
+              <th>Parqueadero</th>
+              <th>Ingreso</th>
+              <th>Salida</th>
+              <th>Estado</th>
+              <th>Portero</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (b of bitacora; track b.id) {
+              <tr>
+                <td>{{ b.visitante }}</td>
+                <td>{{ b.documento }}</td>
+                <td>{{ b.torre }}</td>
+                <td>{{ b.apartamento }}</td>
+                <td>{{ b.parqueadero || '—' }}</td>
+                <td>{{ b.fecha_ingreso }}</td>
+                <td>{{ b.fecha_salida || '—' }}</td>
+                <td>
+                  <span class="estado" [class.estado--dentro]="b.estado === 'Dentro'"
+                        [class.estado--libre]="b.estado !== 'Dentro'">
+                    {{ b.estado }}
+                  </span>
+                </td>
+                <td>{{ b.portero }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="vacio">No hay ingresos para los filtros seleccionados.</p>
+    }
+  </section>
+</main>

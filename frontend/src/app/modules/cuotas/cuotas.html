@@ -1,67 +1,86 @@
-<div class="contenedor-resultado">
-  <h2>Generar cuotas</h2>
-  <form (ngSubmit)="generarCuotas()">
-    <label>
-      Periodo
-      <input type="month" name="periodo" [(ngModel)]="periodo" required>
-    </label>
-    <label>
-      Presupuesto base del periodo
-      <input type="number" name="presupuestoBase" [(ngModel)]="presupuestoBase" min="0.01" step="0.01" required>
-    </label>
-    <label>
-      Fecha de vencimiento
-      <input type="date" name="fechaVencimiento" [(ngModel)]="fechaVencimiento" required>
-    </label>
-    <button type="submit" [disabled]="cargando()">
-      {{ cargando() ? 'Generando...' : 'Generar cuotas' }}
-    </button>
-  </form>
+<main class="pagina">
+  <header class="encabezado">
+    <p class="eyebrow">Administración</p>
+    <h1>Generar cuotas</h1>
+    <p class="bajada">Crea las cuotas de administración de un periodo a partir del presupuesto base y define su fecha de vencimiento.</p>
+  </header>
 
-  @if (error()) {
-    <p role="alert">{{ error() }}</p>
-  }
+  <section class="panel">
+    <h2>Nuevo periodo</h2>
+    <form (ngSubmit)="generarCuotas()">
+      <div class="form-rejilla">
+        <label>
+          Periodo
+          <input type="month" name="periodo" [(ngModel)]="periodo" required>
+        </label>
+        <label>
+          Presupuesto base del periodo
+          <input type="number" name="presupuestoBase" [(ngModel)]="presupuestoBase" min="0.01" step="0.01" required>
+        </label>
+        <label>
+          Fecha de vencimiento
+          <input type="date" name="fechaVencimiento" [(ngModel)]="fechaVencimiento" required>
+        </label>
+      </div>
+      @if (periodo && fechaVencimiento) {
+        <p class="ayuda">Al confirmar se crearán cuotas para el periodo <strong>{{ periodo }}</strong> con vencimiento el <strong>{{ fechaVencimiento }}</strong>.</p>
+      }
+      <div class="acciones">
+        <button type="submit" [disabled]="cargando()">
+          {{ cargando() ? 'Generando...' : 'Generar cuotas' }}
+        </button>
+      </div>
+    </form>
+
+    @if (error()) {
+      <p role="alert">{{ error() }}</p>
+    }
+  </section>
 
   @if (respuesta(); as resultado) {
-    <p role="status">
+    <p class="mensaje" role="status">
       {{ resultado.generadas }} cuotas nuevas para {{ resultado.periodo }}.
       Las cuotas ya existentes para ese periodo no se duplicaron.
     </p>
-    <div class="tabla-contenedor">
-      <table>
-        <thead>
-          <tr>
-            <th>Torre</th>
-            <th>Apartamento</th>
-            <th>Residentes</th>
-            <th>Periodo</th>
-            <th>Valor</th>
-            <th>Vencimiento</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (cuota of resultado.cuotas; track cuota.id) {
+
+    <section class="seccion">
+      <h2 class="seccion__titulo">Cuotas generadas</h2>
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
             <tr>
-              <td>{{ cuota.torre }}</td>
-              <td>{{ cuota.apartamento }}</td>
-              <td>
-                @if (cuota.residentes.length) {
-                  @for (residente of cuota.residentes; track residente.id) {
-                    <span>{{ residente.nombre }} ({{ residente.tipo }})</span><br>
-                  }
-                } @else {
-                  Sin residente registrado
-                }
-              </td>
-              <td>{{ cuota.periodo }}</td>
-              <td>{{ cuota.valor }}</td>
-              <td>{{ cuota.fecha_vencimiento }}</td>
-              <td>{{ cuota.estado }}</td>
+              <th>Torre</th>
+              <th>Apartamento</th>
+              <th>Residentes</th>
+              <th class="numerico">Periodo</th>
+              <th class="numerico">Valor</th>
+              <th>Vencimiento</th>
+              <th>Estado</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (cuota of resultado.cuotas; track cuota.id) {
+              <tr>
+                <td>{{ cuota.torre }}</td>
+                <td>{{ cuota.apartamento }}</td>
+                <td>
+                  @if (cuota.residentes.length) {
+                    @for (residente of cuota.residentes; track residente.id) {
+                      <span>{{ residente.nombre }} ({{ residente.tipo }})</span><br>
+                    }
+                  } @else {
+                    Sin residente registrado
+                  }
+                </td>
+                <td class="numerico">{{ cuota.periodo }}</td>
+                <td class="numerico">{{ cuota.valor }}</td>
+                <td>{{ cuota.fecha_vencimiento }}</td>
+                <td><span class="estado estado--{{ cuota.estado }}">{{ cuota.estado }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
   }
-</div>
+</main>

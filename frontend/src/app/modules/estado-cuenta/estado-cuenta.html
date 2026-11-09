@@ -1,14 +1,68 @@
-<section>
-  <h2>Estado de cuenta</h2>
-  @if (error()) { <p role="alert">{{ error() }}</p> }
-  <div class="tabla">
-    <table>
-      <thead><tr><th>Torre</th><th>Apartamento</th><th>Residente(s)</th><th>Cuotas pendientes</th><th>Cuotas en mora</th><th>Saldo total</th><th>Total pagado</th></tr></thead>
-      <tbody>
-        @for (cuenta of cuentas(); track cuenta.apartamento_id) {
-          <tr><td>{{ cuenta.torre }}</td><td>{{ cuenta.apartamento }}</td><td>{{ cuenta.residentes || 'Sin residente activo' }}</td><td>{{ cuenta.cuotas_pendientes }}</td><td>{{ cuenta.cuotas_en_mora }}</td><td>{{ cuenta.saldo_total }}</td><td>{{ cuenta.valor_pagado_total }}</td></tr>
-        }
-      </tbody>
-    </table>
-  </div>
-</section>
+<main class="pagina">
+  <header class="encabezado">
+    <p class="eyebrow">Finanzas</p>
+    <h1>Estado de cuenta</h1>
+    <p class="bajada">Consulta los totales generales y el detalle de saldo, pagos y mora de cada apartamento del conjunto.</p>
+  </header>
+
+  @if (error()) {
+    <p role="alert">{{ error() }}</p>
+  }
+
+  @if (cuentas().length) {
+    <section class="resumen" aria-label="Totales generales">
+      <div class="resumen__dato">
+        <p class="resumen__etiqueta">Total facturado</p>
+        <p class="resumen__valor">{{ totalFacturado().toFixed(2) }}</p>
+      </div>
+      <div class="resumen__dato">
+        <p class="resumen__etiqueta">Total pagado</p>
+        <p class="resumen__valor">{{ totalPagado().toFixed(2) }}</p>
+      </div>
+      <div class="resumen__dato">
+        <p class="resumen__etiqueta">Saldo pendiente</p>
+        <p class="resumen__valor">{{ saldoPendiente().toFixed(2) }}</p>
+      </div>
+      <div class="resumen__dato">
+        <p class="resumen__etiqueta">Cuotas en mora</p>
+        <p class="resumen__valor" [class.resumen__valor--riesgo]="cuotasEnMora() > 0">{{ cuotasEnMora() }}</p>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <h2 class="seccion__titulo">Cuentas por apartamento</h2>
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
+            <tr>
+              <th>Torre</th>
+              <th>Apartamento</th>
+              <th>Residente(s)</th>
+              <th class="numerico">Cuotas pendientes</th>
+              <th class="numerico">Cuotas en mora</th>
+              <th class="numerico">Saldo total</th>
+              <th class="numerico">Total pagado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cuenta of cuentas(); track cuenta.apartamento_id) {
+              <tr>
+                <td>{{ cuenta.torre }}</td>
+                <td>{{ cuenta.apartamento }}</td>
+                <td>{{ cuenta.residentes || 'Sin residente activo' }}</td>
+                <td class="numerico">{{ cuenta.cuotas_pendientes }}</td>
+                <td class="numerico">{{ cuenta.cuotas_en_mora }}</td>
+                <td class="numerico">{{ cuenta.saldo_total }}</td>
+                <td class="numerico">{{ cuenta.valor_pagado_total }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  } @else {
+    @if (!error()) {
+      <p class="vacio">No hay cuentas registradas todavía.</p>
+    }
+  }
+</main>

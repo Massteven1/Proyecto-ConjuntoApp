@@ -1,30 +1,139 @@
-<main>
-  <a class="brand" routerLink="/login">ConjuntoApp</a>
+<main class="pagina pagina--inicio">
   @if (cargando) {
-    <p>Comprobando sesión…</p>
+    <p role="status">Comprobando sesión…</p>
   } @else if (usuario) {
-    <h1>Inicio</h1>
-    <p>Inicio de sesión correcto.</p>
-    <p>Bienvenido/a, <strong>{{ usuario.nombres }} {{ usuario.apellidos }}</strong>.</p>
-    @if (usuario.rol === 'Administrador') {
-      <p><a routerLink="/tablero">Ver tablero de administración</a></p>
-      <p><a routerLink="/usuarios">Administrar usuarios</a></p>
-      <p><a routerLink="/inmuebles">Administrar torres y apartamentos</a></p>
-      <p><a routerLink="/residencias">Asociar residentes a apartamentos</a></p>
+    <header class="encabezado">
+      <p class="eyebrow">Sesión iniciada</p>
+      <h1>Hola, {{ usuario.nombres }}</h1>
+      <p class="bajada">{{ usuario.rol }} · {{ usuario.correo }}</p>
+    </header>
 
-      <p><a routerLink="/zonas">Administrar zonas comunes</a></p>
-      <p><a routerLink="/reservas">Aprobar reservas</a></p>
-    } @else if (usuario.rol === 'Residente') {
-      <p><a routerLink="/reservas">Consultar disponibilidad y reservar zonas</a></p>
-    } @else if (usuario.rol === 'Portero') {
-      <p><a routerLink="/reservas">Ver reservas de hoy</a></p>
-    }
-    <p><a routerLink="/perfil">Ver perfil y cambiar contraseña</a></p>
-    <button class="submit-button" type="button" (click)="cerrarSesion()" [disabled]="cargando">
-      {{ cargando ? 'Cerrando sesión…' : 'Cerrar sesión' }}
-    </button>
+    <h2 class="seccion__titulo">Qué puedes hacer</h2>
+
+    <ul class="indice">
+      @if (usuario.rol === 'Administrador') {
+        <li>
+          <a routerLink="/tablero">
+            <span class="indice__titulo">Tablero del conjunto</span>
+            <span class="indice__desc">Cartera, PQRS, reservas y visitantes del día.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/usuarios">
+            <span class="indice__titulo">Usuarios</span>
+            <span class="indice__desc">Crea cuentas, asigna roles y cambia su estado.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/inmuebles">
+            <span class="indice__titulo">Inmuebles</span>
+            <span class="indice__desc">Torres, apartamentos, áreas y coeficientes.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/residencias">
+            <span class="indice__titulo">Residencias</span>
+            <span class="indice__desc">Responsable de cada apartamento en el periodo.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/zonas">
+            <span class="indice__titulo">Zonas comunes</span>
+            <span class="indice__desc">Espacios disponibles para reservar.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/reservas">
+            <span class="indice__titulo">Reservas</span>
+            <span class="indice__desc">Solicitudes pendientes de aprobación.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/cuotas">
+            <span class="indice__titulo">Cuotas</span>
+            <span class="indice__desc">Genera las cuotas del periodo.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/pagos">
+            <span class="indice__titulo">Pagos</span>
+            <span class="indice__desc">Registra los pagos recibidos.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/estado-cuenta">
+            <span class="indice__titulo">Estado de cuenta</span>
+            <span class="indice__desc">Saldo y mora por apartamento.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/comunicados">
+            <span class="indice__titulo">Comunicados</span>
+            <span class="indice__desc">Publica avisos para los residentes.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/porteria">
+            <span class="indice__titulo">Portería</span>
+            <span class="indice__desc">Ingreso y salida de visitantes.</span>
+          </a>
+        </li>
+      } @else if (usuario.rol === 'Residente') {
+        <li>
+          <a routerLink="/visitantes">
+            <span class="indice__titulo">Visitantes</span>
+            <span class="indice__desc">Preautoriza a quien va a visitarte.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/reservas">
+            <span class="indice__titulo">Reservas</span>
+            <span class="indice__desc">Consulta disponibilidad y reserva zonas comunes.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/estado-cuenta">
+            <span class="indice__titulo">Estado de cuenta</span>
+            <span class="indice__desc">Cuotas pendientes y saldo del apartamento.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/comunicados">
+            <span class="indice__titulo">Comunicados</span>
+            <span class="indice__desc">Avisos de la administración.</span>
+          </a>
+        </li>
+      } @else if (usuario.rol === 'Portero') {
+        <li>
+          <a routerLink="/porteria">
+            <span class="indice__titulo">Portería</span>
+            <span class="indice__desc">Registra ingresos y salidas de visitantes.</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/reservas">
+            <span class="indice__titulo">Reservas de hoy</span>
+            <span class="indice__desc">Zonas comunes reservadas para la jornada.</span>
+          </a>
+        </li>
+      }
+
+      <li>
+        <a routerLink="/perfil">
+          <span class="indice__titulo">Mi perfil</span>
+          <span class="indice__desc">Datos personales y cambio de contraseña.</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="inicio__pie">
+      <button class="secundario" type="button" (click)="cerrarSesion()" [disabled]="cargando">
+        {{ cargando ? 'Cerrando sesión…' : 'Cerrar sesión' }}
+      </button>
+    </div>
+
     @if (mensaje) {
-      <p class="status-message error" role="status">{{ mensaje }}</p>
+      <p class="mensaje error" role="status">{{ mensaje }}</p>
     }
   }
 </main>

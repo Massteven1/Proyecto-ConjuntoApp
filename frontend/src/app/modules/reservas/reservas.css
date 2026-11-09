@@ -1,139 +1,49 @@
-:host {
-  display: block;
-  min-height: 100vh;
-  padding: 2rem;
-  color: #182d25;
-  background: #f4f7f4;
-}
+/* Layout helpers for reservas — everything else comes from the global design system. */
 
-.reservas-page {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-nav a {
-  color: #286547;
-}
-
-header {
-  margin: 1.5rem 0;
-}
-
-h1, h2, h3, p {
-  margin-top: 0;
-}
-
-.eyebrow {
-  margin-bottom: 0.4rem;
-  color: #286547;
-  font-weight: 700;
-}
-
-.panel {
-  margin: 1rem 0;
-  padding: 1.5rem;
-  border: 1px solid #dce5de;
-  border-radius: 12px;
-  background: #fff;
-}
-
-.filtros, form {
+/* Availability filters: the fields sit in a plain div, not a form. */
+.filtros {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: var(--e-4);
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  align-items: start;
+  margin-bottom: var(--e-5);
 }
 
-label {
-  display: grid;
-  gap: 0.4rem;
-  font-weight: 600;
+/* Selected zone as a detail sheet. */
+.detalle-zona {
+  max-width: 34rem;
+  margin-bottom: var(--e-5);
 }
 
-input, select, textarea {
-  width: 100%;
-  min-height: 42px;
-  padding: 0.55rem;
-  border: 1px solid #aebdb2;
-  border-radius: 6px;
-  color: inherit;
-  font: inherit;
+.horarios-titulo {
+  margin-bottom: var(--e-2);
 }
 
-textarea {
-  resize: vertical;
+/* Occupied slots, read as agenda rows. */
+.horarios {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--linea);
 }
 
-.ancho-completo {
-  grid-column: 1 / -1;
-}
-
-button {
-  min-height: 40px;
-  padding: 0.5rem 0.85rem;
-  border: 0;
-  border-radius: 6px;
-  color: #fff;
-  background: #286547;
-  font: inherit;
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-button.secundario {
-  border: 1px solid #aebdb2;
-  color: #244535;
-  background: #fff;
-}
-
-button.peligro {
-  background: #a23f37;
-}
-
-.acciones {
+.horarios li {
   display: flex;
-  gap: 0.5rem;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e-4);
+  padding: 0.5rem var(--e-3);
+  border-bottom: 1px solid var(--linea);
 }
 
-.tabla-contenedor {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 0.75rem;
-  border-bottom: 1px solid #e1e8e2;
-  text-align: left;
+.horarios__rango {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-.mensaje {
-  color: #286547;
-}
-
-.mensaje.error {
-  color: #a23f37;
-}
-
-.ayuda {
-  margin-top: 0.75rem;
-  color: #52665a;
-}
-
-@media (max-width: 600px) {
-  :host {
-    padding: 1rem;
-  }
-
-  .panel {
-    padding: 1rem;
-  }
+/* Porter's agenda: the hour column leads the scan. */
+.agenda td:first-child {
+  font-weight: 600;
+  white-space: nowrap;
 }

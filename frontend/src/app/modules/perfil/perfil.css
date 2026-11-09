@@ -1,17 +1,33 @@
-:host { display: block; min-height: 100vh; padding: 2rem; color: #182d25; background: #f4f7f4; }
-.pagina { max-width: 760px; margin: 0 auto; }
-a, .eyebrow { color: #286547; }
-header { margin: 1.5rem 0; }
-h1, h2, p { margin-top: 0; }
-.panel { margin: 1rem 0; padding: 1.5rem; border: 1px solid #dce5de; border-radius: 10px; background: #fff; }
-dl { display: grid; grid-template-columns: minmax(100px, 150px) 1fr; gap: .7rem; margin: 0; }
-dt { font-weight: 700; }
-dd { margin: 0; }
-form { display: grid; gap: 1rem; max-width: 460px; }
-label { display: grid; gap: .4rem; font-weight: 600; }
-input { width: 100%; min-height: 40px; padding: .5rem; border: 1px solid #aebdb2; border-radius: 5px; color: inherit; font: inherit; }
-button { min-height: 40px; padding: .5rem .8rem; border: 0; border-radius: 5px; color: #fff; background: #286547; font: inherit; cursor: pointer; }
-button:disabled { cursor: not-allowed; opacity: .55; }
-.mensaje { margin-top: 1rem; color: #286547; }
-.mensaje.error { color: #a23f37; }
-@media (max-width: 600px) { :host { padding: 1rem; } .panel { padding: 1rem; } }
+/* Solo ayudas de layout: todo el estilo visual vive en el sistema global (src/styles.css). */
+
+.perfil__identidad {
+  display: flex;
+  align-items: center;
+  gap: var(--e-4);
+  margin-bottom: var(--e-5);
+}
+
+.perfil__mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 auto;
+  background-color: var(--tinta);
+  color: var(--papel);
+  border-radius: var(--radio);
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.perfil__nombre {
+  margin: 0;
+  font-weight: 600;
+}
+
+.perfil__cambio {
+  max-width: 26rem;
+}

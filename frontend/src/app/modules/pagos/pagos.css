@@ -1,4 +1,2 @@
-section { max-width: 720px; margin: 2rem auto; padding: 1.5rem; }
-form, label { display: grid; gap: .75rem; }
-form { gap: 1rem; }
-input, select, button { padding: .65rem; }
+/* Esta vista consume el sistema global de src/styles.css.
+   No redefine tokens, formularios, tablas ni estados. */

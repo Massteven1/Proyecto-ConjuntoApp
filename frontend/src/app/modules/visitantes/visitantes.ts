@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AuthService, AuthUser } from '../../services/auth';
 import { VisitantesService } from '../../services/visitantes';
 
 @Component({
   selector: 'app-visitantes',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule],
   templateUrl: './visitantes.html',
   styleUrl: './visitantes.css',
 })
