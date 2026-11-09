@@ -47,6 +47,11 @@ export class Visitantes implements OnInit {
         this.cdr.detectChanges();
 
         if (this.usuario) {
+          if (this.usuario.rol !== 'Residente') {
+            void this.router.navigateByUrl('/inicio');
+            return;
+          }
+
           this.cargarAutorizaciones();
           this.cargarApartamentos();
         } else {

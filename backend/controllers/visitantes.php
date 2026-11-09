@@ -13,6 +13,12 @@ if ($usuario == null) {
     exit;
 }
 
+if (($usuario['rol'] ?? '') !== 'Residente') {
+    http_response_code(403);
+    echo json_encode(["ERROR", "Solo un residente puede preautorizar visitantes"]);
+    exit;
+}
+
 require_once __DIR__ . '/../models/conexion.php';
 require_once __DIR__ . '/../models/visitante.php';
 require_once __DIR__ . '/../models/autorizacion.php';
@@ -44,6 +50,14 @@ switch ($control) {
 
         if ($documento === '' || $nombre === '' || $apartamento_id === 0 || $fecha_visita === '') {
             $vec = ["ERROR", "Complete los datos del visitante"];
+            break;
+        }
+
+        $apartamentos = $autorizacion->apartamentos($usuario_id);
+        $permitidos = array_map('intval', array_column($apartamentos, 'id'));
+
+        if (!in_array($apartamento_id, $permitidos, true)) {
+            $vec = ["ERROR", "El apartamento no esta asociado a su usuario"];
             break;
         }
 

@@ -13,6 +13,12 @@ if ($usuario == null) {
     exit;
 }
 
+if (!in_array($usuario['rol'] ?? '', ['Portero', 'Administrador'], true)) {
+    http_response_code(403);
+    echo json_encode(["ERROR", "Solo porteria o administracion puede consultar este modulo"]);
+    exit;
+}
+
 require_once __DIR__ . '/../models/conexion.php';
 require_once __DIR__ . '/../models/ingreso.php';
 

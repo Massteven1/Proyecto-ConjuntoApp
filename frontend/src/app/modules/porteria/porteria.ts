@@ -41,6 +41,11 @@ export class Porteria implements OnInit {
         this.cdr.detectChanges();
 
         if (this.usuario) {
+          if (this.usuario.rol !== 'Portero' && this.usuario.rol !== 'Administrador') {
+            void this.router.navigateByUrl('/inicio');
+            return;
+          }
+
           this.cargarDentro();
           this.cargarParqueaderos();
           this.cargarBitacora();

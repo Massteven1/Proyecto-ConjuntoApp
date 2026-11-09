@@ -1,16 +1,41 @@
-<nav>
+@if (visible) {
+  <nav>
     <ul>
-    <li><a routerLink="/inicio">Inicio</a></li>
-    <li><a routerLink="/visitantes">Visitantes</a></li>
-    <li><a routerLink="/porteria">Porteria</a></li>
-    <li><a routerLink="/cuotas">Cuotas</a></li>
-    <li><a routerLink="/pagos">Pagos</a></li>
-    <li><a routerLink="/estado-cuenta">Estado de cuenta</a></li>
-    <li><a routerLink="/comunicados">Comunicados</a></li>
-    <li><a routerLink="/tablero">Tablero</a></li>
-    <li><a routerLink="/registro">Registro</a></li>
-    <li><a routerLink="/login">Login</a></li>
-    <li><a routerLink="/zonas">Zonas</a></li>
-    <li><a routerLink="/reservas">Reservas</a></li>
+      <li><a routerLink="/inicio" routerLinkActive="activo">Inicio</a></li>
+
+      @if (esResidente) {
+        <li><a routerLink="/visitantes" routerLinkActive="activo">Visitantes</a></li>
+      }
+
+      @if (esAdministrador || esPortero) {
+        <li><a routerLink="/porteria" routerLinkActive="activo">Portería</a></li>
+      }
+
+      @if (esAdministrador) {
+        <li><a routerLink="/tablero" routerLinkActive="activo">Tablero</a></li>
+        <li><a routerLink="/usuarios" routerLinkActive="activo">Usuarios</a></li>
+        <li><a routerLink="/inmuebles" routerLinkActive="activo">Inmuebles</a></li>
+        <li><a routerLink="/residencias" routerLinkActive="activo">Residencias</a></li>
+        <li><a routerLink="/zonas" routerLinkActive="activo">Zonas</a></li>
+      }
+
+      <li><a routerLink="/reservas" routerLinkActive="activo">Reservas</a></li>
+
+      @if (esAdministrador) {
+        <li><a routerLink="/cuotas" routerLinkActive="activo">Cuotas</a></li>
+        <li><a routerLink="/pagos" routerLinkActive="activo">Pagos</a></li>
+      }
+
+      @if (esAdministrador || esResidente) {
+        <li><a routerLink="/estado-cuenta" routerLinkActive="activo">Estado de cuenta</a></li>
+        <li><a routerLink="/comunicados" routerLinkActive="activo">Comunicados</a></li>
+      }
+
+      <li><a routerLink="/perfil" routerLinkActive="activo">Perfil</a></li>
+
+      <li>
+        <button type="button" class="cerrar-sesion" (click)="cerrarSesion()">Cerrar sesión</button>
+      </li>
     </ul>
-</nav>
+  </nav>
+}
