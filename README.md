@@ -72,6 +72,15 @@ Después de importar `sql/conjunto_app.sql`, puedes iniciar sesión con estas cu
 
 Al iniciar sesión con un usuario Administrador, el inicio ofrece los enlaces para administrar zonas y aprobar reservas. Desde zonas se pueden crear, consultar, editar e inactivar espacios; desde reservas se revisan las solicitudes pendientes. Los residentes consultan la disponibilidad por fecha, solicitan reservas y cancelan con 24 horas de anticipación. Portería puede consultar las reservas aprobadas del día. El endpoint `backend/controllers/reservas.php` valida cruces, horario, apartamento asociado y cuotas vencidas. La base de datos ya incluye las tablas y campos necesarios; no hace falta ejecutar una migración.
 
+### Portería, visitantes y parqueaderos
+
+Desde `visitantes` el residente preautoriza a sus visitantes con documento, fecha, si llevan vehículo y la placa. Desde `porteria` el portero busca por documento, registra el ingreso y la salida, y consulta quiénes están dentro.
+
+La pantalla de portería también administra los parqueaderos de visitantes (crear, editar y eliminar). Al registrar un ingreso con vehículo se asigna un parqueadero libre; uno ocupado no se puede asignar y no se puede eliminar mientras esté ocupado. Al registrar la salida el parqueadero vuelve a quedar libre.
+
+La bitácora de ingresos se filtra por fecha, torre y apartamento, y muestra visitante, apartamento, torre, parqueadero y portero en una sola consulta con JOIN. Un visitante sin salida registrada aparece con estado `Dentro`. Las tablas `ingresos` y `parqueaderos_visitantes` ya existen en `sql/conjunto_app.sql`.
+
+
 ### Base de datos y generación de cuotas
 
 Importa `sql/conjunto_app.sql` en MySQL para crear las tablas y `sp_generar_cuotas`. Antes de iniciar PHP, configura las variables de entorno `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASSWORD` con los datos locales de la base `conjunto_app`. El API de cuotas se encuentra en `http://localhost:8000/api/cuotasAPI.php`.

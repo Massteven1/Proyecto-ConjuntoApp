@@ -26,4 +26,25 @@ export class PorteriaService {
   dentro() {
     return this.http.get(`${this.api}?control=dentro`, { withCredentials: true });
   }
+
+  parqueaderos() {
+    return this.http.get(`${this.api}?control=parqueaderos`, { withCredentials: true });
+  }
+
+  crearParqueadero(codigo: string) {
+    return this.http.post(`${this.api}?control=parqueadero_insertar`, { codigo }, { withCredentials: true });
+  }
+
+  editarParqueadero(id: number, codigo: string) {
+    return this.http.post(`${this.api}?control=parqueadero_editar`, { id, codigo }, { withCredentials: true });
+  }
+
+  eliminarParqueadero(id: number) {
+    return this.http.post(`${this.api}?control=parqueadero_eliminar`, { id }, { withCredentials: true });
+  }
+
+  bitacora(fecha: string, torre: string, apartamento: string) {
+    const filtros = `&fecha=${encodeURIComponent(fecha)}&torre=${encodeURIComponent(torre)}&apartamento=${encodeURIComponent(apartamento)}`;
+    return this.http.get(`${this.api}?control=bitacora${filtros}`, { withCredentials: true });
+  }
 }

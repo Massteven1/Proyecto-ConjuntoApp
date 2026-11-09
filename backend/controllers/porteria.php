@@ -79,7 +79,32 @@ switch ($control) {
             break;
         }
 
-        $vec = $ingreso->insertar($visitante['id'], $visitante['apartamento_id'], $portero_id, $visitante['placa']);
+        $parqueadero_id = intval($params->parqueadero_id ?? 0);
+
+        if ($parqueadero_id > 0) {
+            $parqueadero = $ingreso->buscarParqueadero($parqueadero_id);
+
+            if ($parqueadero == null) {
+                $vec = ["ERROR", "El parqueadero no existe"];
+                break;
+            }
+
+            if ($parqueadero['ocupado'] == 1) {
+                $vec = ["ERROR", "El parqueadero ya esta ocupado"];
+                break;
+            }
+
+            if ($ingreso->ocuparParqueadero($parqueadero_id) == 0) {
+                $vec = ["ERROR", "El parqueadero ya esta ocupado"];
+                break;
+            }
+        }
+
+        $vec = $ingreso->insertar($visitante['id'], $visitante['apartamento_id'], $portero_id, $visitante['placa'], $parqueadero_id);
+
+        if ($vec[0] === 'ERROR' && $parqueadero_id > 0) {
+            $ingreso->liberarParqueadero($parqueadero_id);
+        }
         break;
 
     case 'salida':
@@ -110,6 +135,35 @@ switch ($control) {
     case 'dentro':
         $vec = ["OK", $ingreso->listarDentro()];
         break;
+
+    case 'parqueaderos':
+        $vec = ["OK", $ingreso->listarParqueaderos()];
+        break;
+
+    case 'parqueadero_insertar':
+        $params = json_decode(file_get_contents('php://input'));
+        $vec = $ingreso->insertarParqueadero($params->codigo ?? '');
+        break;
+
+    case 'parqueadero_editar':
+        $params = json_decode(file_get_contents('php://input'));
+        $id = intval($params->id ?? 0);
+        $vec = $ingreso->editarParqueadero($id, $params->codigo ?? '');
+        break;
+
+    case 'parqueadero_eliminar':
+        $params = json_decode(file_get_contents('php://input'));
+        $id = intval($params->id ?? 0);
+        $vec = $ingreso->eliminarParqueadero($id);
+        break;
+
+    case 'bitacora':
+        $fecha = mysqli_real_escape_string($conexion, $_GET['fecha'] ?? '');
+        $torre = mysqli_real_escape_string($conexion, $_GET['torre'] ?? '');
+        $apartamento = mysqli_real_escape_string($conexion, $_GET['apartamento'] ?? '');
+        $vec = ["OK", $ingreso->listarBitacora($fecha, $torre, $apartamento)];
+        break;
+
 
     default:
         http_response_code(400);

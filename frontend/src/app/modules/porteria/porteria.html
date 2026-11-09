@@ -42,6 +42,18 @@
 
   <button type="button" (click)="ingresar()">Registrar ingreso</button>
   <button type="button" (click)="salir()">Registrar salida</button>
+
+  @if (resultado.con_vehiculo == 1 && resultado.dentro == 0) {
+    <p>
+      <label for="parqueadero">Parqueadero de visitantes</label>
+      <select id="parqueadero" name="parqueadero" [(ngModel)]="parqueaderoId">
+        <option [ngValue]="0">Sin parqueadero</option>
+        @for (p of parqueaderosLibres; track p.id) {
+          <option [ngValue]="p.id">{{ p.codigo }}</option>
+        }
+      </select>
+    </p>
+  }
 }
 
 <p>{{ mensaje }}</p>
@@ -79,4 +91,87 @@
 
 @if (dentro.length == 0) {
   <p>No hay visitantes dentro</p>
+}
+
+<h2>Parqueaderos de visitantes</h2>
+
+<form (ngSubmit)="agregarParqueadero()">
+  <label for="nuevoParqueadero">Codigo del parqueadero</label>
+  <input id="nuevoParqueadero" name="nuevoParqueadero" type="text" [(ngModel)]="nuevoParqueadero" />
+  <button type="submit">Agregar</button>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>Codigo</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (p of parqueaderos; track p.id) {
+      <tr>
+        <td>{{ p.codigo }}</td>
+        <td>{{ p.ocupado == 1 ? 'Ocupado' : 'Libre' }}</td>
+        <td>
+          <button type="button" (click)="editarParqueadero(p)">Editar</button>
+          <button type="button" (click)="eliminarParqueadero(p)">Eliminar</button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<h2>Bitacora de ingresos</h2>
+
+<form (ngSubmit)="cargarBitacora()">
+  <label for="fecha">Fecha</label>
+  <input id="fecha" name="fecha" type="date" [(ngModel)]="filtros.fecha" />
+
+  <label for="torre">Torre</label>
+  <input id="torre" name="torre" type="text" [(ngModel)]="filtros.torre" />
+
+  <label for="apartamento">Apartamento</label>
+  <input id="apartamento" name="apartamento" type="text" [(ngModel)]="filtros.apartamento" />
+
+  <button type="submit">Filtrar</button>
+  <button type="button" (click)="limpiarFiltros()">Limpiar</button>
+</form>
+
+@if (bitacora.length > 0) {
+  <table>
+    <thead>
+      <tr>
+        <th>Visitante</th>
+        <th>Documento</th>
+        <th>Torre</th>
+        <th>Apartamento</th>
+        <th>Parqueadero</th>
+        <th>Ingreso</th>
+        <th>Salida</th>
+        <th>Estado</th>
+        <th>Portero</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (b of bitacora; track b.id) {
+        <tr>
+          <td>{{ b.visitante }}</td>
+          <td>{{ b.documento }}</td>
+          <td>{{ b.torre }}</td>
+          <td>{{ b.apartamento }}</td>
+          <td>{{ b.parqueadero }}</td>
+          <td>{{ b.fecha_ingreso }}</td>
+          <td>{{ b.fecha_salida }}</td>
+          <td>{{ b.estado }}</td>
+          <td>{{ b.portero }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@if (bitacora.length == 0) {
+  <p>No hay ingresos para los filtros seleccionados</p>
 }

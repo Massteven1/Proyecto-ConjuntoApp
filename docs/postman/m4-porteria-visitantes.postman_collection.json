@@ -1,0 +1,365 @@
+{
+  "info": {
+    "name": "ConjuntoApp - M4 Porteria y visitantes (RF-15 a RF-18)",
+    "description": "Casos de Postman del modulo M4. Configura los correos y contraseñas, importa sql/conjunto_app.sql y ejecuta las solicitudes EN ORDEN: la sesion se reutiliza por cookies. RF-18 incluye la consulta con JOIN del modulo.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "residenteEmail", "value": "prueba@gmail.com" },
+    { "key": "residentePassword", "value": "prueba123" },
+    { "key": "porteroEmail", "value": "portero1@conjunto.com" },
+    { "key": "porteroPassword", "value": "prueba123" },
+    { "key": "documentoVisitante", "value": "990000001" },
+    { "key": "nombreVisitante", "value": "Visitante Prueba" },
+    { "key": "fechaVisita", "value": "2026-11-11" },
+    { "key": "apartamentoId", "value": "1" },
+    { "key": "parqueaderoId", "value": "" },
+    { "key": "parqueaderoNuevoId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "RF-15 Iniciar sesion como residente",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-15 el residente inicia sesion', function () {",
+          "  pm.response.to.have.status(200);",
+          "  pm.expect(pm.response.json().user.rol).to.eql('Residente');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"correo\":\"{{residenteEmail}}\",\"password\":\"{{residentePassword}}\"}" },
+        "url": "{{baseUrl}}/api/auth.php?action=login"
+      }
+    },
+    {
+      "name": "RF-15 Preautorizar visitante con vehiculo",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-15 guarda el visitante con fecha, vehiculo y placa', function () {",
+          "  pm.response.to.have.status(200);",
+          "  pm.expect(pm.response.json()[0]).to.eql('OK');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"documento\":\"{{documentoVisitante}}\",\"nombre\":\"{{nombreVisitante}}\",\"telefono\":\"3000000000\",\"apartamento_id\":{{apartamentoId}},\"fecha_visita\":\"{{fechaVisita}}\",\"con_vehiculo\":1,\"placa\":\"TST123\"}" },
+        "url": "{{baseUrl}}/controllers/visitantes.php?control=preautorizar"
+      }
+    },
+    {
+      "name": "RF-15 Listar mis autorizaciones",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-15 el residente ve sus autorizaciones', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data[0]).to.eql('OK');",
+          "  pm.expect(data[1].length).to.be.above(0);",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/controllers/visitantes.php?control=listar"
+      }
+    },
+    {
+      "name": "RF-16 Iniciar sesion como portero",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-16 el portero inicia sesion', function () {",
+          "  pm.response.to.have.status(200);",
+          "  pm.expect(pm.response.json().user.rol).to.eql('Portero');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"correo\":\"{{porteroEmail}}\",\"password\":\"{{porteroPassword}}\"}" },
+        "url": "{{baseUrl}}/api/auth.php?action=login"
+      }
+    },
+    {
+      "name": "RF-16 Buscar visitante por documento",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-16 encuentra al visitante con su apartamento y torre', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data[0]).to.eql('OK');",
+          "  pm.expect(data[1].documento).to.eql(pm.collectionVariables.get('documentoVisitante'));",
+          "  pm.expect(data[1].apartamento).to.be.a('string');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/controllers/porteria.php?control=buscar&documento={{documentoVisitante}}"
+      }
+    },
+    {
+      "name": "RF-17 Listar parqueaderos y tomar el primero libre",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-17 lista los parqueaderos con su estado', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data[0]).to.eql('OK');",
+          "  pm.expect(data[1].length).to.be.above(0);",
+          "  pm.expect(data[1][0]).to.have.property('ocupado');",
+          "  const libre = data[1].find((p) => Number(p.ocupado) === 0);",
+          "  pm.expect(libre, 'Debe existir al menos un parqueadero libre').to.not.be.undefined;",
+          "  pm.collectionVariables.set('parqueaderoId', libre.id);",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/controllers/porteria.php?control=parqueaderos"
+      }
+    },
+    {
+      "name": "RF-16 Registrar ingreso con parqueadero",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-16 registra el ingreso con fecha y hora', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data[0]).to.eql('OK');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"documento\":\"{{documentoVisitante}}\",\"parqueadero_id\":{{parqueaderoId}}}" },
+        "url": "{{baseUrl}}/controllers/porteria.php?control=ingreso"
+      }
+    },
+    {
+      "name": "RF-17 El parqueadero asignado queda ocupado",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-17 el parqueadero usado ya no aparece libre', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  const usado = data[1].find((p) => String(p.id) === String(pm.collectionVariables.get('parqueaderoId')));",
+          "  pm.expect(usado.ocupado).to.eql('1');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/controllers/porteria.php?control=parqueaderos"
+      }
+    },
+    {
+      "name": "RF-16 Un visitante dentro no puede ingresar dos veces",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-16 rechaza el doble ingreso', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data[0]).to.eql('ERROR');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"documento\":\"{{documentoVisitante}}\",\"parqueadero_id\":0}" },
+        "url": "{{baseUrl}}/controllers/porteria.php?control=ingreso"
+      }
+    },
+    {
+      "name": "RF-18 Bitacora con JOIN (visitante, apartamento, torre, parqueadero)",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-18 la bitacora trae los datos de la consulta con JOIN', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data[0]).to.eql('OK');",
+          "  const fila = data[1].find((f) => f.documento === pm.collectionVariables.get('documentoVisitante'));",
+          "  pm.expect(fila, 'El ingreso recien creado debe aparecer en la bitacora').to.not.be.undefined;",
+          "  pm.expect(fila.estado).to.eql('Dentro');",
+          "  pm.expect(fila.torre).to.be.a('string');",
+          "  pm.expect(fila.apartamento).to.be.a('string');",
+          "  pm.expect(fila.parqueadero).to.be.a('string');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/controllers/porteria.php?control=bitacora"
+      }
+    },
+    {
+      "name": "RF-18 Bitacora filtrada por torre y apartamento",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-18 el filtro devuelve solo las filas de esa torre y apartamento', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data[0]).to.eql('OK');",
+          "  pm.expect(data[1].length).to.be.above(0);",
+          "  data[1].forEach((fila) => {",
+          "    pm.expect(fila.torre).to.include('Torre A');",
+          "    pm.expect(fila.apartamento).to.include('101');",
+          "  });",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/controllers/porteria.php?control=bitacora&torre=Torre%20A&apartamento=101"
+      }
+    },
+    {
+      "name": "RF-16 Registrar salida",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-16 la salida se registra con fecha y hora', function () {",
+          "  pm.response.to.have.status(200);",
+          "  pm.expect(pm.response.json()[0]).to.eql('OK');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"documento\":\"{{documentoVisitante}}\"}" },
+        "url": "{{baseUrl}}/controllers/porteria.php?control=salida"
+      }
+    },
+    {
+      "name": "RF-17 La salida libera el parqueadero",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-17 el parqueadero vuelve a estar libre', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  const usado = data[1].find((p) => String(p.id) === String(pm.collectionVariables.get('parqueaderoId')));",
+          "  pm.expect(usado.ocupado).to.eql('0');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/controllers/porteria.php?control=parqueaderos"
+      }
+    },
+    {
+      "name": "RF-18 La bitacora marca la salida como Fuera",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-18 el visitante ya no aparece dentro', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  const filas = data[1].filter((f) => f.documento === pm.collectionVariables.get('documentoVisitante'));",
+          "  pm.expect(filas[0].estado).to.eql('Fuera');",
+          "  pm.expect(filas[0].fecha_salida).to.not.be.null;",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/controllers/porteria.php?control=bitacora&torre=Torre%20A&apartamento=101"
+      }
+    },
+    {
+      "name": "RF-17 Crear parqueadero",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-17 crea el parqueadero', function () {",
+          "  pm.response.to.have.status(200);",
+          "  pm.expect(pm.response.json()[0]).to.eql('OK');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"codigo\":\"V-POSTMAN\"}" },
+        "url": "{{baseUrl}}/controllers/porteria.php?control=parqueadero_insertar"
+      }
+    },
+    {
+      "name": "RF-17 Tomar el id del parqueadero creado",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-17 el parqueadero nuevo aparece libre', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  const nuevo = data[1].find((p) => p.codigo === 'V-POSTMAN');",
+          "  pm.expect(nuevo, 'El parqueadero creado debe aparecer en el listado').to.not.be.undefined;",
+          "  pm.expect(nuevo.ocupado).to.eql('0');",
+          "  pm.collectionVariables.set('parqueaderoNuevoId', nuevo.id);",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/controllers/porteria.php?control=parqueaderos"
+      }
+    },
+    {
+      "name": "RF-17 Editar parqueadero",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-17 actualiza el codigo', function () {",
+          "  pm.response.to.have.status(200);",
+          "  pm.expect(pm.response.json()[0]).to.eql('OK');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"id\":{{parqueaderoNuevoId}},\"codigo\":\"V-POSTMAN-2\"}" },
+        "url": "{{baseUrl}}/controllers/porteria.php?control=parqueadero_editar"
+      }
+    },
+    {
+      "name": "RF-17 Eliminar parqueadero",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('RF-17 elimina el parqueadero libre', function () {",
+          "  pm.response.to.have.status(200);",
+          "  pm.expect(pm.response.json()[0]).to.eql('OK');",
+          "});"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"id\":{{parqueaderoNuevoId}}}" },
+        "url": "{{baseUrl}}/controllers/porteria.php?control=parqueadero_eliminar"
+      }
+    }
+  ]
+}
