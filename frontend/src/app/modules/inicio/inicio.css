@@ -1,5 +1,5 @@
 .pagina--inicio {
-  max-width: 48rem;
+  max-width: var(--ancho);
 }
 
 .inicio__pie {

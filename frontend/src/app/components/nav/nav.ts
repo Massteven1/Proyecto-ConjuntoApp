@@ -32,6 +32,18 @@ export class Nav implements OnInit, OnDestroy {
     return this.usuario?.rol === 'Portero';
   }
 
+  get pagosActivo(): boolean {
+    return ['/cuotas', '/pagos', '/estado-cuenta'].includes(this.router.url.split('?')[0]);
+  }
+
+  get gestionActiva(): boolean {
+    return ['/tablero', '/usuarios', '/inmuebles', '/residencias', '/zonas'].includes(this.router.url.split('?')[0]);
+  }
+
+  get comunidadActiva(): boolean {
+    return ['/visitantes', '/porteria', '/reservas', '/comunicados'].includes(this.router.url.split('?')[0]);
+  }
+
   ngOnInit(): void {
     this.suscripcion = this.router.events
       .pipe(filter((evento) => evento instanceof NavigationEnd))
