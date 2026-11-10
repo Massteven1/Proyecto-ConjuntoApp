@@ -7,6 +7,7 @@ import { AuthService, AuthUser } from '../../services/auth';
 
 @Component({
   imports: [RouterLink, RouterLinkActive],
+  host: { '[class.nav-visible]': 'visible' },
   selector: 'app-nav',
   styleUrl: './nav.css',
   templateUrl: './nav.html',
