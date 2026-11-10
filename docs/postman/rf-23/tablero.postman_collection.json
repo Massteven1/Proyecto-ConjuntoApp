@@ -1,0 +1,34 @@
+{
+  "info": {
+    "name": "ConjuntoApp - RF-23 Tablero",
+    "description": "Requiere sesión de administrador. Valida cartera pendiente, PQRS abiertas, reservas de la semana y visitantes del día.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Consultar indicadores del tablero",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Devuelve los cuatro indicadores del tablero', function () {",
+              "  pm.response.to.have.status(200);",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.porcentaje_cartera).to.be.a('number');",
+              "  pm.expect(data.pqrs_abiertas).to.be.a('number');",
+              "  pm.expect(data.reservas_semana).to.be.a('number');",
+              "  pm.expect(data.visitantes_hoy).to.be.a('number');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8000/api/tablero.php"
+      }
+    }
+  ]
+}

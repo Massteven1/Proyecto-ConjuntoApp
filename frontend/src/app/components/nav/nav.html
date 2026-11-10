@@ -1,0 +1,74 @@
+@if (visible) {
+  <nav class="rail" aria-label="Navegación principal">
+    <div class="rail__marca">
+      <a class="marca" routerLink="/inicio">ConjuntoApp</a>
+      <p class="marca__sub">Administración de propiedad horizontal</p>
+    </div>
+
+    @if (usuario) {
+      <div class="rail__rol">
+        <p class="rol__nombre">{{ usuario.nombres }} {{ usuario.apellidos }}</p>
+        <p class="rol__etiqueta">{{ usuario.rol }}</p>
+      </div>
+    }
+
+    <ul class="rail__menu">
+      <li><a routerLink="/inicio" routerLinkActive="activo">Inicio</a></li>
+
+      @if (esAdministrador) {
+        <li>
+          <details class="rail__grupo" [open]="gestionActiva">
+            <summary>Administración</summary>
+            <ul class="rail__submenu">
+              <li><a routerLink="/tablero" routerLinkActive="activo">Tablero</a></li>
+              <li><a routerLink="/usuarios" routerLinkActive="activo">Usuarios</a></li>
+              <li><a routerLink="/inmuebles" routerLinkActive="activo">Inmuebles</a></li>
+              <li><a routerLink="/residencias" routerLinkActive="activo">Residencias</a></li>
+              <li><a routerLink="/zonas" routerLinkActive="activo">Zonas comunes</a></li>
+            </ul>
+          </details>
+        </li>
+      }
+
+      @if (esAdministrador || esResidente) {
+        <li>
+          <details class="rail__grupo" [open]="pagosActivo">
+            <summary>Pagos</summary>
+            <ul class="rail__submenu">
+              @if (esAdministrador) {
+                <li><a routerLink="/cuotas" routerLinkActive="activo">Cuotas</a></li>
+                <li><a routerLink="/pagos" routerLinkActive="activo">Registrar pagos</a></li>
+              }
+              <li><a routerLink="/estado-cuenta" routerLinkActive="activo">Estado de cuenta</a></li>
+            </ul>
+          </details>
+        </li>
+      }
+
+      <li>
+        <details class="rail__grupo" [open]="comunidadActiva">
+          <summary>Comunidad</summary>
+          <ul class="rail__submenu">
+            @if (esResidente) {
+              <li><a routerLink="/visitantes" routerLinkActive="activo">Visitantes</a></li>
+            }
+            @if (esAdministrador || esPortero) {
+              <li><a routerLink="/porteria" routerLinkActive="activo">Portería</a></li>
+            }
+            <li><a routerLink="/reservas" routerLinkActive="activo">Reservas</a></li>
+            @if (esAdministrador || esResidente) {
+              <li><a routerLink="/pqrs" routerLinkActive="activo">PQRS</a></li>
+              <li><a routerLink="/comunicados" routerLinkActive="activo">Comunicados</a></li>
+            }
+          </ul>
+        </details>
+      </li>
+
+      <li><a routerLink="/perfil" routerLinkActive="activo">Mi perfil</a></li>
+    </ul>
+
+    <div class="rail__pie">
+      <button class="salir" type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </nav>
+}

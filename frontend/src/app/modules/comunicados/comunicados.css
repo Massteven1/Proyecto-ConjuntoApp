@@ -1,0 +1,29 @@
+/* Tablero de avisos: únicos helpers propios; el resto viene de src/styles.css. */
+
+.tablero {
+  margin-top: var(--e-6);
+}
+
+.tablero__aviso {
+  padding: var(--e-4) 0 var(--e-5);
+  border-top: 1px solid var(--linea);
+}
+
+.tablero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e-2) var(--e-4);
+  margin-bottom: var(--e-2);
+}
+
+.tablero__cuerpo {
+  margin: 0;
+  max-width: 62ch;
+  white-space: pre-line;
+}
+
+.tablero__pie {
+  margin-top: var(--e-4);
+}

@@ -1,0 +1,230 @@
+<main class="pagina">
+  <header class="encabezado">
+    <p class="eyebrow">Zonas comunes</p>
+    <h1>Reservas</h1>
+    @if (usuario?.rol === 'Residente') {
+      <p class="bajada">Consulta la disponibilidad y solicita una reserva para tu apartamento.</p>
+    } @else if (usuario?.rol === 'Administrador') {
+      <p class="bajada">Revisa las solicitudes pendientes de aprobación.</p>
+    } @else {
+      <p class="bajada">Reservas aprobadas para la jornada de hoy.</p>
+    }
+  </header>
+
+  @if (mensaje) {
+    <p class="mensaje" [class.error]="error" role="status">{{ mensaje }}</p>
+  }
+
+  @if (usuario?.rol === 'Residente') {
+    <!-- Consulta de disponibilidad -->
+    <section class="panel" aria-labelledby="disponibilidad-title">
+      <h2 id="disponibilidad-title">Consultar disponibilidad</h2>
+      <div class="filtros">
+        <label for="fecha">
+          Fecha
+          <input id="fecha" type="date" name="fecha" [(ngModel)]="fecha" (change)="cargarDisponibilidad()" required />
+        </label>
+        <label for="zona">
+          Zona común
+          <select id="zona" name="zona" [(ngModel)]="zonaId">
+            @for (zona of zonas; track zona.id) {
+              <option [ngValue]="zona.id">{{ zona.nombre }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      @if (cargando) {
+        <p>Consultando disponibilidad…</p>
+      } @else if (zonas.length === 0) {
+        <p class="vacio">No hay zonas comunes activas.</p>
+      } @else {
+        @for (zona of zonas; track zona.id) {
+          @if (zona.id === zonaId) {
+            <dl class="detalle-zona">
+              <dt>Horario</dt>
+              <dd>{{ zona.hora_apertura.slice(0, 5) }}–{{ zona.hora_cierre.slice(0, 5) }}</dd>
+              <dt>Aforo</dt>
+              <dd>{{ zona.aforo }}</dd>
+              <dt>Costo</dt>
+              <dd>{{ zona.costo | currency:'COP':'symbol-narrow':'1.0-2' }}</dd>
+              <dt>Depósito</dt>
+              <dd>{{ zona.requiere_deposito === 1 ? 'Sí' : 'No' }}</dd>
+            </dl>
+          }
+        }
+        <h3 class="horarios-titulo">Horarios ocupados</h3>
+        @if (reservasDeZona.length === 0) {
+          <p class="vacio">No hay reservas para esta zona y fecha.</p>
+        } @else {
+          <ul class="horarios">
+            @for (reserva of reservasDeZona; track reserva.id) {
+              <li>
+                <span class="horarios__rango">{{ reserva.hora_inicio.slice(0, 5) }}–{{ reserva.hora_fin.slice(0, 5) }}</span>
+                <span class="estado estado--{{ reserva.estado }}">{{ reserva.estado }}</span>
+              </li>
+            }
+          </ul>
+        }
+      }
+    </section>
+
+    <!-- Solicitud de reserva -->
+    @if (!cargando && zonas.length > 0) {
+      <section class="panel" aria-labelledby="solicitud-title">
+        <h2 id="solicitud-title">Solicitar reserva</h2>
+        @if (apartamentos.length === 0) {
+          <p class="vacio">No hay un apartamento asociado a tu usuario. Contacta a la administración.</p>
+        } @else {
+          <form class="form-rejilla" (ngSubmit)="guardarReserva()">
+            <label for="apartamento">
+              Apartamento
+              <select id="apartamento" name="apartamento" [(ngModel)]="apartamentoId" required>
+                @for (apartamento of apartamentos; track apartamento.id) {
+                  <option [ngValue]="apartamento.id">{{ apartamento.torre }} - {{ apartamento.apartamento }}</option>
+                }
+              </select>
+            </label>
+            <label for="hora_inicio">
+              Hora de inicio
+              <input id="hora_inicio" type="time" name="hora_inicio" [(ngModel)]="horaInicio" required />
+            </label>
+            <label for="hora_fin">
+              Hora de finalización
+              <input id="hora_fin" type="time" name="hora_fin" [(ngModel)]="horaFin" required />
+            </label>
+            <label for="observaciones" class="ancho-completo">
+              Observaciones
+              <textarea id="observaciones" name="observaciones" [(ngModel)]="observaciones" maxlength="1000" rows="3"></textarea>
+            </label>
+            <div class="acciones">
+              <button type="submit" [disabled]="guardando || !zonaId || !apartamentoId">
+                {{ guardando ? 'Enviando…' : 'Solicitar reserva' }}
+              </button>
+            </div>
+          </form>
+          <p class="ayuda">La solicitud queda pendiente hasta que la administración la apruebe.</p>
+        }
+      </section>
+    }
+
+    <!-- Registro de reservas propias -->
+    <section class="seccion" aria-labelledby="mis-reservas-title">
+      <h2 class="seccion__titulo" id="mis-reservas-title">Mis próximas reservas</h2>
+      @if (misReservas.length === 0) {
+        <p class="vacio">No tienes reservas próximas pendientes o aprobadas.</p>
+      } @else {
+        <div class="tabla-contenedor">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Zona</th>
+                <th>Horario</th>
+                <th>Apartamento</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (reserva of misReservas; track reserva.id) {
+                <tr>
+                  <td>{{ reserva.fecha }}</td>
+                  <td>{{ reserva.zona_nombre }}</td>
+                  <td>{{ reserva.hora_inicio.slice(0, 5) }}–{{ reserva.hora_fin.slice(0, 5) }}</td>
+                  <td>{{ reserva.torre }} - {{ reserva.apartamento }}</td>
+                  <td><span class="estado estado--{{ reserva.estado }}">{{ reserva.estado }}</span></td>
+                  <td>
+                    <button class="secundario" type="button" (click)="gestionar(reserva.id, 'cancelar')">
+                      Cancelar
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="ayuda">La cancelación requiere al menos 24 horas de anticipación.</p>
+      }
+    </section>
+  } @else if (usuario?.rol === 'Administrador') {
+    <!-- Aprobación de solicitudes -->
+    <section class="seccion" aria-labelledby="pendientes-title">
+      <h2 class="seccion__titulo" id="pendientes-title">Solicitudes pendientes</h2>
+      @if (cargando) {
+        <p>Cargando solicitudes…</p>
+      } @else if (pendientes.length === 0) {
+        <p class="vacio">No hay reservas pendientes.</p>
+      } @else {
+        <div class="tabla-contenedor">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha y horario</th>
+                <th>Zona</th>
+                <th>Residente</th>
+                <th>Apartamento</th>
+                <th>Observaciones</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (reserva of pendientes; track reserva.id) {
+                <tr>
+                  <td>{{ reserva.fecha }}<br />{{ reserva.hora_inicio.slice(0, 5) }}–{{ reserva.hora_fin.slice(0, 5) }}</td>
+                  <td>{{ reserva.zona_nombre }}</td>
+                  <td>{{ reserva.residente }}</td>
+                  <td>{{ reserva.torre }} - {{ reserva.apartamento }}</td>
+                  <td>{{ reserva.observaciones || '—' }}</td>
+                  <td><span class="estado estado--pendiente">Pendiente</span></td>
+                  <td>
+                    <div class="acciones-fila">
+                      <button type="button" (click)="gestionar(reserva.id, 'aprobar')">Aprobar</button>
+                      <button class="peligro" type="button" (click)="gestionar(reserva.id, 'rechazar')">Rechazar</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  } @else if (usuario?.rol === 'Portero') {
+    <!-- Agenda del día -->
+    <section class="seccion" aria-labelledby="hoy-title">
+      <h2 class="seccion__titulo" id="hoy-title">Reservas de hoy</h2>
+      @if (cargando) {
+        <p>Cargando reservas…</p>
+      } @else if (reservasHoy.length === 0) {
+        <p class="vacio">No hay reservas aprobadas para hoy.</p>
+      } @else {
+        <div class="tabla-contenedor">
+          <table class="agenda">
+            <thead>
+              <tr>
+                <th>Horario</th>
+                <th>Zona</th>
+                <th>Residente</th>
+                <th>Apartamento</th>
+                <th>Observaciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (reserva of reservasHoy; track reserva.hora_inicio + reserva.zona_nombre) {
+                <tr>
+                  <td>{{ reserva.hora_inicio.slice(0, 5) }}–{{ reserva.hora_fin.slice(0, 5) }}</td>
+                  <td>{{ reserva.zona_nombre }}</td>
+                  <td>{{ reserva.residente }}</td>
+                  <td>{{ reserva.torre }} - {{ reserva.apartamento }}</td>
+                  <td>{{ reserva.observaciones || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</main>

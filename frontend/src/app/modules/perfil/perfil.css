@@ -1,0 +1,45 @@
+/* Solo ayudas de layout: todo el estilo visual vive en el sistema global (src/styles.css). */
+
+.perfil__disposicion {
+  display: grid;
+  gap: var(--e-4);
+  align-items: start;
+}
+
+.perfil__disposicion .panel + .panel {
+  margin-top: 0;
+}
+
+@media (min-width: 900px) {
+  .perfil__disposicion {
+    grid-template-columns: minmax(0, 1.3fr) minmax(19rem, 1fr);
+  }
+}
+
+.perfil__identidad {
+  display: flex;
+  align-items: center;
+  gap: var(--e-4);
+  margin-bottom: var(--e-5);
+}
+
+.perfil__mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 auto;
+  background-color: var(--tinta);
+  color: var(--papel);
+  border-radius: var(--radio);
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.perfil__nombre {
+  margin: 0;
+  font-weight: 600;
+}

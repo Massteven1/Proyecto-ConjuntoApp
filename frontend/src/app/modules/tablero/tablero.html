@@ -1,0 +1,42 @@
+<main class="pagina">
+  <header class="encabezado">
+    <p class="eyebrow">Administración</p>
+    <h1>Tablero</h1>
+    <p class="bajada">Estado del conjunto en este momento.</p>
+  </header>
+
+  @if (error()) {
+    <p role="alert">{{ error() }}</p>
+  } @else if (resumen(); as datos) {
+    <section class="tablero" aria-label="Indicadores del conjunto">
+      <article class="tablero__item tablero__item--ancho">
+        <h2 class="tablero__rotulo">Cartera pendiente</h2>
+        <p class="tablero__valor">{{ datos.porcentaje_cartera }}<span class="tablero__unidad">%</span></p>
+        <div class="tablero__barra" aria-hidden="true">
+          <span [style.width.%]="datos.porcentaje_cartera"></span>
+        </div>
+        <p class="tablero__nota">Saldo pendiente sobre el valor total facturado.</p>
+      </article>
+
+      <article class="tablero__item">
+        <h2 class="tablero__rotulo">PQRS abiertas</h2>
+        <p class="tablero__valor">{{ datos.pqrs_abiertas }}</p>
+        <p class="tablero__nota">Radicadas o en trámite.</p>
+      </article>
+
+      <article class="tablero__item">
+        <h2 class="tablero__rotulo">Reservas de la semana</h2>
+        <p class="tablero__valor">{{ datos.reservas_semana }}</p>
+        <p class="tablero__nota">Zonas comunes solicitadas.</p>
+      </article>
+
+      <article class="tablero__item">
+        <h2 class="tablero__rotulo">Visitantes de hoy</h2>
+        <p class="tablero__valor">{{ datos.visitantes_hoy }}</p>
+        <p class="tablero__nota">Ingresos registrados en portería.</p>
+      </article>
+    </section>
+  } @else {
+    <p role="status">Cargando indicadores…</p>
+  }
+</main>

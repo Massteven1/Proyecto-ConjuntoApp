@@ -1,0 +1,54 @@
+<main class="pagina">
+  <header class="encabezado">
+    <p class="eyebrow">Administración</p>
+    <h1>Torres y apartamentos</h1>
+    <p class="bajada">Registra las torres y los apartamentos del conjunto; se admiten hasta cuatro torres y diez apartamentos por torre.</p>
+  </header>
+  @if (mensaje) { <p class="mensaje" [class.error]="error" role="status">{{ mensaje }}</p> }
+
+  <section class="panel">
+    <h2>{{ editandoTorreId === null ? 'Crear torre' : 'Editar torre' }}</h2>
+    <form class="form-rejilla" (ngSubmit)="guardarTorre()">
+      <label>Nombre<input name="nombreTorre" [(ngModel)]="torre.nombre" maxlength="50" required /></label>
+      <label>Pisos<input name="pisosTorre" type="number" [(ngModel)]="torre.pisos" min="1" step="1" required /></label>
+      <div class="acciones"><button type="submit">{{ editandoTorreId === null ? 'Crear torre' : 'Guardar torre' }}</button>
+        @if (editandoTorreId !== null) { <button class="secundario" type="button" (click)="cancelarTorre()">Cancelar</button> }
+      </div>
+    </form>
+    <div class="tabla-contenedor"><table><thead><tr><th>Torre</th><th class="numerico">Pisos</th><th class="numerico">Apartamentos</th><th>Acciones</th></tr></thead><tbody>
+      @for (item of torres; track item.id) {
+        <tr><td>{{ item.nombre }}</td><td class="numerico">{{ item.pisos }}</td><td class="numerico">{{ item.apartamentos }} de 10</td><td class="acciones-fila">
+          <button class="secundario" type="button" (click)="editarTorre(item)">Editar</button>
+          <button class="secundario" type="button" (click)="eliminar('torre', item)">Eliminar</button>
+        </td></tr>
+      }
+    </tbody></table></div>
+  </section>
+
+  <section class="panel">
+    <h2>{{ editandoApartamentoId === null ? 'Crear apartamento' : 'Editar apartamento' }}</h2>
+    <form class="form-rejilla" (ngSubmit)="guardarApartamento()">
+      <label>Torre<select name="torreApartamento" [(ngModel)]="apartamento.torre_id" required>
+        @for (item of torres; track item.id) { <option [ngValue]="item.id">{{ item.nombre }} ({{ item.apartamentos }}/10)</option> }
+      </select></label>
+      <label>Número<input name="numeroApartamento" [(ngModel)]="apartamento.numero" maxlength="20" required /></label>
+      <label>Piso<input name="pisoApartamento" type="number" [(ngModel)]="apartamento.piso" min="1" step="1" required /></label>
+      <label>Área en m²<input name="areaApartamento" type="number" [(ngModel)]="apartamento.area_m2" min="0.01" step="0.01" required /></label>
+      <label>Coeficiente<input name="coeficienteApartamento" type="number" [(ngModel)]="apartamento.coeficiente" min="0.0001" max="1" step="0.0001" required /></label>
+      <div class="acciones"><button type="submit">{{ editandoApartamentoId === null ? 'Crear apartamento' : 'Guardar apartamento' }}</button>
+        @if (editandoApartamentoId !== null) { <button class="secundario" type="button" (click)="cancelarApartamento()">Cancelar</button> }
+      </div>
+    </form>
+    <h2>Apartamentos registrados</h2>
+    @if (cargando) { <p>Cargando datos</p> } @else {
+      <div class="tabla-contenedor"><table><thead><tr><th>Torre</th><th>Número</th><th class="numerico">Piso</th><th class="numerico">Área m²</th><th class="numerico">Coeficiente</th><th>Acciones</th></tr></thead><tbody>
+        @for (item of apartamentos; track item.id) {
+          <tr><td>{{ item.torre }}</td><td>{{ item.numero }}</td><td class="numerico">{{ item.piso }}</td><td class="numerico">{{ item.area_m2 }}</td><td class="numerico">{{ item.coeficiente }}</td><td class="acciones-fila">
+            <button class="secundario" type="button" (click)="editarApartamento(item)">Editar</button>
+            <button class="secundario" type="button" (click)="eliminar('apartamento', item)">Eliminar</button>
+          </td></tr>
+        }
+      </tbody></table></div>
+    }
+  </section>
+</main>

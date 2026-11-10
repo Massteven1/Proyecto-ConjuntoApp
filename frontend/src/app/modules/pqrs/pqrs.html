@@ -1,0 +1,235 @@
+<section class="pqrs">
+  <header class="pqrs__header">
+    <div>
+      <p class="pqrs__eyebrow">Módulo</p>
+      <h1>PQRS</h1>
+    </div>
+  </header>
+
+  @if (error()) {
+    <div class="pqrs__alert pqrs__alert--error">{{ error() }}</div>
+  }
+
+  @if (mensaje()) {
+    <div class="pqrs__alert pqrs__alert--success">{{ mensaje() }}</div>
+  }
+
+  @if (esResidente) {
+    <form class="pqrs__form" (ngSubmit)="crear()">
+      <h2>Radicar PQRS</h2>
+
+      <div class="pqrs__grid">
+        <label>
+          <span>Tipo</span>
+          <select [(ngModel)]="tipo" name="tipo">
+            <option value="Petición">Petición</option>
+            <option value="Queja">Queja</option>
+            <option value="Reclamo">Reclamo</option>
+            <option value="Sugerencia">Sugerencia</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Categoría</span>
+          <select [(ngModel)]="categoriaId" name="categoriaId">
+            @for (categoria of categorias(); track categoria.id) {
+              <option [ngValue]="categoria.id">{{ categoria.nombre }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          <span>Apartamento</span>
+          <select [(ngModel)]="apartamentoId" name="apartamentoId" required>
+            @for (apartamento of apartamentos(); track apartamento.id) {
+              <option [ngValue]="apartamento.id">{{ apartamento.torre }} - {{ apartamento.numero }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <label>
+        <span>Asunto</span>
+        <input type="text" [(ngModel)]="asunto" name="asunto" maxlength="150" required />
+      </label>
+
+      <label>
+        <span>Descripción</span>
+        <textarea [(ngModel)]="descripcion" name="descripcion" rows="5" required></textarea>
+      </label>
+
+      <label>
+        <span>Adjunto (opcional)</span>
+        <input type="file" name="adjunto" accept=".pdf,.jpg,.jpeg,.png" (change)="seleccionarAdjunto($event)" />
+      </label>
+
+      <button type="submit" class="pqrs__button" [disabled]="apartamentos().length === 0">Radicar PQRS</button>
+      @if (apartamentos().length === 0) {
+        <p>No tienes un apartamento activo asociado para radicar una PQRS.</p>
+      }
+    </form>
+  }
+
+  <section class="pqrs__filters" aria-label="Filtros de PQRS">
+    <label>
+      <span>Estado</span>
+      <select [(ngModel)]="estadoFiltro" name="estadoFiltro">
+        <option value="">Todos</option>
+        <option value="Radicada">Radicada</option>
+        <option value="En trámite">En trámite</option>
+        <option value="Respondida">Respondida</option>
+        <option value="Cerrada">Cerrada</option>
+      </select>
+    </label>
+    <label>
+      <span>Categoría</span>
+      <select [(ngModel)]="categoriaFiltro" name="categoriaFiltro">
+        <option [ngValue]="0">Todas</option>
+        @for (categoria of categorias(); track categoria.id) {
+          <option [ngValue]="categoria.id">{{ categoria.nombre }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="pqrs__button pqrs__button--secondary" (click)="cargar()">Aplicar filtros</button>
+  </section>
+
+  @if (resumen()) {
+    <div class="pqrs__summary">
+      <div class="pqrs__card">
+        <span>Total</span>
+        <strong>{{ resumen()!.totales.total }}</strong>
+      </div>
+      <div class="pqrs__card">
+        <span>Radicadas</span>
+        <strong>{{ resumen()!.totales.radicadas }}</strong>
+      </div>
+      <div class="pqrs__card">
+        <span>En trámite</span>
+        <strong>{{ resumen()!.totales.en_tramite }}</strong>
+      </div>
+      <div class="pqrs__card">
+        <span>Respondidas</span>
+        <strong>{{ resumen()!.totales.respondidas }}</strong>
+      </div>
+      <div class="pqrs__card">
+        <span>Cerradas</span>
+        <strong>{{ resumen()!.totales.cerradas }}</strong>
+      </div>
+      @if (esAdministrador) {
+        <div class="pqrs__card">
+          <span>Promedio de respuesta</span>
+          <strong>
+            @if (resumen()!.totales.promedio_dias_respuesta !== null) {
+              {{ resumen()!.totales.promedio_dias_respuesta | number: '1.1-1' }} días
+            } @else {
+              Sin respuestas
+            }
+          </strong>
+        </div>
+      }
+    </div>
+
+    @if (esAdministrador) {
+      <section class="pqrs__report">
+        <h2>PQRS por categoría</h2>
+        <ul>
+          @for (categoria of resumen()!.categorias; track categoria.id) {
+            <li><span>{{ categoria.nombre }}</span><strong>{{ categoria.total }}</strong></li>
+          }
+        </ul>
+      </section>
+    }
+  }
+
+  <div class="pqrs__list">
+    @for (item of items(); track item.id) {
+      <article class="pqrs__item" [class.vencida]="item.vencida">
+        <div class="pqrs__topline">
+          <div>
+            <span class="pqrs__radicado">{{ item.radicado }}</span>
+            <span class="pqrs__estado">{{ item.estado }}</span>
+          </div>
+          @if (item.vencida) {
+            <span class="pqrs__badge">Vencida</span>
+          }
+        </div>
+
+        <div class="pqrs__meta">
+          <span>{{ item.tipo }}</span>
+          <span>{{ item.categoria }}</span>
+          <span>{{ item.torre }}</span>
+          <span>{{ item.apartamento }}</span>
+        </div>
+
+        <h3>{{ item.asunto }}</h3>
+        <p>{{ item.descripcion }}</p>
+
+        @if (item.adjunto) {
+          <p class="pqrs__adjunto"><a [href]="'/api/pqrs.php?action=adjunto&id=' + item.id" target="_blank" rel="noopener noreferrer">Ver adjunto</a></p>
+        }
+
+        @if (esAdministrador) {
+          <div class="pqrs__admin">
+            <label>
+              <span>Estado</span>
+              <select [ngModel]="adminEstado[item.id] ?? item.estado" (ngModelChange)="adminEstado[item.id] = $event" name="estado-{{ item.id }}">
+                <option value="Radicada">Radicada</option>
+                <option value="En trámite">En trámite</option>
+                <option value="Respondida">Respondida</option>
+                <option value="Cerrada">Cerrada</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Respuesta o comentario de seguimiento</span>
+              <textarea [(ngModel)]="adminRespuesta[item.id]" name="respuesta-{{ item.id }}" rows="3"></textarea>
+            </label>
+
+            <button type="button" class="pqrs__button pqrs__button--secondary" (click)="actualizarEstado(item)">
+              Guardar estado
+            </button>
+          </div>
+        }
+
+        @if (item.respuesta) {
+          <div class="pqrs__respuesta">
+            <strong>Respuesta:</strong>
+            <p>{{ item.respuesta }}</p>
+          </div>
+        }
+
+        <button type="button" class="pqrs__link" (click)="verHistorial(item)">
+          {{ historialVisible()[item.id] ? 'Ocultar seguimiento' : 'Ver seguimiento' }}
+        </button>
+        @if (historialVisible()[item.id]) {
+          <ol class="pqrs__history">
+            @for (evento of historiales()[item.id] ?? []; track $index) {
+              <li>
+                <strong>{{ evento.estado_anterior ?? 'Nueva' }} → {{ evento.estado_nuevo }}</strong>
+                <span>{{ evento.fecha | date: 'short' }} · {{ evento.usuario }}</span>
+                <p>{{ evento.comentario }}</p>
+              </li>
+            }
+          </ol>
+        }
+
+        @if (esResidente && item.estado === 'Respondida' && item.calificacion === null) {
+          <div class="pqrs__calificacion">
+            <span>Califica la respuesta</span>
+            <div class="pqrs__stars">
+              <button type="button" (click)="calificar(item, 1)">1</button>
+              <button type="button" (click)="calificar(item, 2)">2</button>
+              <button type="button" (click)="calificar(item, 3)">3</button>
+              <button type="button" (click)="calificar(item, 4)">4</button>
+              <button type="button" (click)="calificar(item, 5)">5</button>
+            </div>
+          </div>
+        }
+
+        @if (item.calificacion !== null) {
+          <p class="pqrs__calificacion--hecha">Tu calificación: {{ item.calificacion }}/5</p>
+        }
+      </article>
+    }
+  </div>
+</section>

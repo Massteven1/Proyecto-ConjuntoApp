@@ -1,0 +1,60 @@
+<main class="pagina">
+  <header class="encabezado">
+    <p class="eyebrow">Comunidad</p>
+    <h1>Comunicados</h1>
+    <p class="bajada">Avisos vigentes de la administración del conjunto. Cada aviso permanece visible hasta la fecha en que se marca su vigencia.</p>
+  </header>
+
+  @if (esAdministrador()) {
+    <section class="panel">
+      <h2>Publicar un comunicado</h2>
+      <form (ngSubmit)="publicar()">
+        <label>
+          Título
+          <input name="titulo" [(ngModel)]="titulo" required maxlength="150">
+        </label>
+        <label>
+          Contenido
+          <textarea name="contenido" [(ngModel)]="contenido" required></textarea>
+        </label>
+        <label class="ancho-completo">
+          Vigente hasta
+          <input type="date" name="vigencia" [(ngModel)]="vigente_hasta" required>
+        </label>
+        <div class="acciones">
+          <button type="submit">Publicar</button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (error()) {
+    <p role="alert">{{ error() }}</p>
+  }
+
+  @if (mensaje()) {
+    <p class="mensaje" role="status">{{ mensaje() }}</p>
+  }
+
+  <section class="tablero">
+    <h2 class="seccion__titulo">Avisos publicados</h2>
+    @for (comunicado of comunicados(); track comunicado.id) {
+      <article class="tablero__aviso">
+        <header class="tablero__meta">
+          <h3>{{ comunicado.titulo }}</h3>
+          <small>Vigente hasta {{ comunicado.vigente_hasta }}</small>
+        </header>
+        <p class="tablero__cuerpo">{{ comunicado.contenido }}</p>
+        <footer class="tablero__pie">
+          @if (!comunicado.leido) {
+            <button class="secundario" type="button" (click)="marcarLeido(comunicado)">Marcar como leído</button>
+          } @else {
+            <span class="estado estado--vigente">Leído</span>
+          }
+        </footer>
+      </article>
+    } @empty {
+      <p class="vacio">No hay comunicados publicados todavía.</p>
+    }
+  </section>
+</main>

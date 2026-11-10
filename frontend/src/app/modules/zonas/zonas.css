@@ -1,0 +1,19 @@
+/* Layout helpers for zonas — everything else comes from the global design system. */
+
+/* Edit mode: ochre edge marks that the form modifies an existing register. */
+.panel-editando {
+  border-left: 3px solid var(--ocre);
+}
+
+.nota-edicion {
+  margin: 0 0 var(--e-4);
+  font-size: 0.875rem;
+  color: var(--ocre);
+}
+
+/* Register detail: deposit note under the cost column. */
+td.numerico small {
+  display: block;
+  margin-top: 0.125rem;
+  text-align: right;
+}

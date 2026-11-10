@@ -1,0 +1,60 @@
+<main class="acceso">
+  <section class="acceso__portada" aria-label="ConjuntoApp">
+    <a class="marca-acceso" routerLink="/login">ConjuntoApp</a>
+
+    <div class="portada__cuerpo">
+      <p class="portada__bajada">Administración de propiedad horizontal · Pereira</p>
+      <ul class="torres">
+        <li><span class="torres__nombre">Torre A</span><span class="torres__detalle">10 apartamentos</span></li>
+        <li><span class="torres__nombre">Torre B</span><span class="torres__detalle">10 apartamentos</span></li>
+        <li><span class="torres__nombre">Torre C</span><span class="torres__detalle">10 apartamentos</span></li>
+        <li><span class="torres__nombre">Torre D</span><span class="torres__detalle">10 apartamentos</span></li>
+      </ul>
+    </div>
+
+    <p class="portada__pie">Cuatro torres · 40 apartamentos · 8 pisos por torre</p>
+  </section>
+
+  <section class="acceso__panel">
+    <div class="acceso__formulario">
+      <h1>Crear cuenta</h1>
+      <p class="bajada">Registra tus datos para acceder al portal de residentes.</p>
+
+      <form (ngSubmit)="onSubmit()">
+        <label for="nombres">Nombres
+          <input id="nombres" name="nombres" [(ngModel)]="nombres" autocomplete="given-name" required />
+        </label>
+
+        <label for="apellidos">Apellidos
+          <input id="apellidos" name="apellidos" [(ngModel)]="apellidos" autocomplete="family-name" required />
+        </label>
+
+        <label for="documento">Número de documento
+          <input id="documento" name="documento" [(ngModel)]="documento" autocomplete="off" required />
+        </label>
+
+        <label for="correo">Correo electrónico
+          <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="email" required />
+        </label>
+
+        <label for="telefono">Teléfono (opcional)
+          <input id="telefono" name="telefono" type="tel" [(ngModel)]="telefono" autocomplete="tel" />
+        </label>
+
+        <label for="password">Contraseña (mínimo 8 caracteres)
+          <input id="password" name="password" type="password" [(ngModel)]="password" autocomplete="new-password" minlength="8" required />
+        </label>
+
+        <button class="submit-button" type="submit" [disabled]="cargando">
+          {{ cargando ? 'Creando cuenta…' : 'Crear cuenta' }}
+        </button>
+      </form>
+
+      @if (mensaje) {
+        <p class="status-message" [class.error]="error" role="status">{{ mensaje }}</p>
+      }
+
+      <p class="acceso__enlace">¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a></p>
+    </div>
+  </section>
+</main>

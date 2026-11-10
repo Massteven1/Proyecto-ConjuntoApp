@@ -1,0 +1,192 @@
+{
+  "info": {
+    "name": "ConjuntoApp - RF-10 a RF-14 PQRS",
+    "description": "Pruebas del flujo M3. Ejecutar en orden contra una base importada y con los usuarios de prueba del README. El adjunto es opcional; para probar carga, seleccionar manualmente un PDF/JPG/PNG de hasta 5 MB en Radicar PQRS.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "residentEmail", "value": "prueba@gmail.com" },
+    { "key": "residentPassword", "value": "prueba123" },
+    { "key": "adminEmail", "value": "admin1@conjunto.com" },
+    { "key": "adminPassword", "value": "prueba123" },
+    { "key": "categoriaId", "value": "1" },
+    { "key": "apartamentoId", "value": "1" },
+    { "key": "pqrsId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Iniciar sesión como residente",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"correo\": \"{{residentEmail}}\",\n  \"password\": \"{{residentPassword}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/api/auth.php?action=login"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Login residente correcto', function () { pm.response.to.have.status(200); });"
+        ] }
+      }]
+    },
+    {
+      "name": "2. Radicar PQRS",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "tipo", "value": "Petición", "type": "text" },
+            { "key": "categoria_id", "value": "{{categoriaId}}", "type": "text" },
+            { "key": "apartamento_id", "value": "{{apartamentoId}}", "type": "text" },
+            { "key": "asunto", "value": "Prueba RF-10 {{$timestamp}}", "type": "text" },
+            { "key": "descripcion", "value": "Solicitud de prueba del módulo PQRS.", "type": "text" }
+          ]
+        },
+        "url": "{{baseUrl}}/api/pqrs.php"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('PQRS creada', function () { pm.response.to.have.status(201); });",
+          "pm.collectionVariables.set('pqrsId', pm.response.json().id);"
+        ] }
+      }]
+    },
+    {
+      "name": "3. Consultar y filtrar como residente",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/pqrs.php?categoria_id={{categoriaId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Listado limitado al residente y filtro aplicado', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data).to.have.property('items');",
+          "  pm.expect(data).to.have.property('resumen');",
+          "  pm.expect(data).to.have.property('categorias');",
+          "  pm.expect(data).to.have.property('apartamentos');",
+          "});"
+        ] }
+      }]
+    },
+    {
+      "name": "4. Iniciar sesión como administrador",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"correo\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/api/auth.php?action=login"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Login administrador correcto', function () { pm.response.to.have.status(200); });"
+        ] }
+      }]
+    },
+    {
+      "name": "5. Responder y cambiar estado",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"estado\": \"Respondida\",\n  \"respuesta\": \"Respuesta de prueba RF-12.\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/api/pqrs.php?action=estado&id={{pqrsId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Respuesta registrada', function () { pm.response.to.have.status(200); });"
+        ] }
+      }]
+    },
+    {
+      "name": "6. Volver a iniciar sesión como residente",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"correo\": \"{{residentEmail}}\",\n  \"password\": \"{{residentPassword}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/api/auth.php?action=login"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Login residente correcto', function () { pm.response.to.have.status(200); });"
+        ] }
+      }]
+    },
+    {
+      "name": "7. Consultar historial de seguimiento",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/pqrs.php?action=historial&id={{pqrsId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Historial conserva radicación y respuesta', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data.items.length).to.be.at.least(2);",
+          "});"
+        ] }
+      }]
+    },
+    {
+      "name": "8. Calificar respuesta",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"calificacion\": 5\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/api/pqrs.php?action=calificar&id={{pqrsId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Calificación guardada', function () { pm.response.to.have.status(200); });"
+        ] }
+      }]
+    },
+    {
+      "name": "9. Reporte por estado y categoría",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/pqrs.php?estado=Respondida&categoria_id={{categoriaId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('Reporte incluye promedio de respuesta', function () {",
+          "  pm.response.to.have.status(200);",
+          "  const data = pm.response.json();",
+          "  pm.expect(data.resumen.totales).to.have.property('promedio_dias_respuesta');",
+          "});"
+        ] }
+      }]
+    }
+  ]
+}

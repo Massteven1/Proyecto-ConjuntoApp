@@ -1,0 +1,102 @@
+<main class="pagina">
+  <header class="encabezado">
+    <p class="eyebrow">Residentes</p>
+    <h1>Preautorizar visitante</h1>
+    @if (usuario) {
+      <p class="bajada">{{ usuario.nombres }} {{ usuario.apellidos }} · {{ usuario.rol }}</p>
+    } @else {
+      <p class="bajada">Registra quién puede ingresar al conjunto en tu nombre.</p>
+    }
+  </header>
+
+  @if (mensaje) {
+    <p class="mensaje" [class.error]="error" role="status">{{ mensaje }}</p>
+  }
+
+  <section class="panel" aria-labelledby="form-titulo">
+    <h2 id="form-titulo">Nueva autorización</h2>
+
+    <form class="form-rejilla" (ngSubmit)="guardar()">
+      <label for="documento">Documento
+        <input id="documento" name="documento" type="text" [(ngModel)]="nuevo.documento" autocomplete="off" />
+      </label>
+
+      <label for="nombre">Nombre
+        <input id="nombre" name="nombre" type="text" [(ngModel)]="nuevo.nombre" autocomplete="off" />
+      </label>
+
+      <label for="telefono">Teléfono
+        <input id="telefono" name="telefono" type="tel" [(ngModel)]="nuevo.telefono" autocomplete="off" />
+      </label>
+
+      <label for="fecha_visita">Fecha de visita
+        <input id="fecha_visita" name="fecha_visita" type="date" [(ngModel)]="nuevo.fecha_visita" />
+      </label>
+
+      <label for="apartamento_id">Apartamento
+        <select id="apartamento_id" name="apartamento_id" [(ngModel)]="nuevo.apartamento_id">
+          <option value="">Seleccione un apartamento</option>
+          @for (a of apartamentos; track a.id) {
+            <option [value]="a.id">{{ a.torre }} - {{ a.numero }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="check" for="con_vehiculo">
+        <input id="con_vehiculo" name="con_vehiculo" type="checkbox" [(ngModel)]="nuevo.con_vehiculo" />
+        Ingresa en vehículo
+      </label>
+
+      @if (nuevo.con_vehiculo) {
+        <label for="placa">Placa
+          <input id="placa" name="placa" type="text" [(ngModel)]="nuevo.placa" placeholder="ABC123" />
+        </label>
+      }
+
+      <div class="acciones">
+        <button type="submit" [disabled]="guardando">
+          {{ guardando ? 'Guardando…' : 'Preautorizar' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="seccion" aria-labelledby="autorizaciones-titulo">
+    <h2 id="autorizaciones-titulo" class="seccion__titulo">Autorizaciones</h2>
+
+    @if (autorizaciones.length === 0) {
+      <p class="vacio">Sin autorizaciones registradas.</p>
+    } @else {
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
+            <tr>
+              <th>Visitante</th>
+              <th>Documento</th>
+              <th>Fecha</th>
+              <th>Torre</th>
+              <th>Apartamento</th>
+              <th>Residente</th>
+              <th>Vehículo</th>
+              <th>Placa</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of autorizaciones; track a.id) {
+              <tr>
+                <td>{{ a.visitante }}</td>
+                <td>{{ a.documento }}</td>
+                <td>{{ a.fecha_visita }}</td>
+                <td>{{ a.torre }}</td>
+                <td>{{ a.apartamento }}</td>
+                <td>{{ a.residente }}</td>
+                <td>{{ a.con_vehiculo == 1 ? 'Sí' : 'No' }}</td>
+                <td>{{ a.placa || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</main>
