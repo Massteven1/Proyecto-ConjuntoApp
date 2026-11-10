@@ -1,19 +1,33 @@
 :host {
   display: block;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex: 0 0 var(--rail);
+  align-self: flex-start;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 .rail {
-  position: sticky;
-  top: 0;
   display: flex;
   flex-direction: column;
-  width: var(--rail);
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   padding: var(--e-5) 0 var(--e-4);
   background-color: var(--tinta);
   color: #c9d6d1;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
 }
 
 /* Identity */
@@ -70,7 +84,8 @@
   padding: var(--e-3) 0;
 }
 
-.rail__menu a {
+.rail__menu a,
+.rail__grupo summary {
   display: block;
   padding: 0.5rem var(--e-5);
   border-left: 3px solid transparent;
@@ -80,7 +95,27 @@
   transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.rail__menu a:hover {
+.rail__grupo summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.rail__grupo summary::-webkit-details-marker {
+  display: none;
+}
+
+.rail__grupo summary::after {
+  content: '+';
+  float: right;
+  color: #8fa39d;
+}
+
+.rail__grupo[open] summary::after {
+  content: '-';
+}
+
+.rail__menu a:hover,
+.rail__grupo summary:hover {
   color: #ffffff;
   background-color: rgba(255, 255, 255, 0.06);
   text-decoration: none;
@@ -91,6 +126,39 @@
   font-weight: 500;
   border-left-color: var(--ocre);
   background-color: rgba(255, 255, 255, 0.08);
+}
+
+.rail__submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 var(--e-3);
+}
+
+.rail__grupo {
+  interpolate-size: allow-keywords;
+}
+
+.rail__grupo::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size 220ms ease,
+    content-visibility 220ms allow-discrete;
+}
+
+.rail__grupo[open]::details-content {
+  block-size: auto;
+}
+
+.rail__submenu a {
+  padding-left: calc(var(--e-5) + var(--e-2));
+  font-size: 0.875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail__grupo::details-content {
+    transition: none;
+  }
 }
 
 /* Sign out */
@@ -113,6 +181,11 @@
 
 /* Compact bar */
 @media (max-width: 900px) {
+  :host {
+    width: 100%;
+    height: auto;
+  }
+
   .rail {
     flex-direction: row;
     flex-wrap: wrap;
@@ -121,9 +194,9 @@
     width: 100%;
     height: auto;
     padding: var(--e-2) var(--e-4);
-    overflow-x: visible;
-    overflow-y: visible;
-    z-index: 10;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 100dvh;
   }
 
   .rail__marca {
@@ -147,12 +220,25 @@
     padding: 0;
   }
 
-  .rail__menu a {
+  .rail__menu a,
+  .rail__grupo summary {
     padding: 0.3125rem 0.5rem;
     border-left: 0;
     border-bottom: 2px solid transparent;
     font-size: 0.875rem;
     white-space: nowrap;
+  }
+
+  .rail__grupo summary::after {
+    margin-left: var(--e-2);
+  }
+
+  .rail__submenu {
+    padding-left: 0;
+  }
+
+  .rail__submenu a {
+    padding-left: 0.5rem;
   }
 
   .rail__menu a.activo {
