@@ -62,10 +62,15 @@ if ($accion == 'profile' && $_SERVER['REQUEST_METHOD'] == 'GET') {
          WHERE u.id = ? AND u.activo = 1 LIMIT 1'
     );
     if (!$query) {
+        error_log(mysqli_error($conexion));
         responderAuth(500, ['message' => 'No fue posible consultar el perfil.']);
     }
     mysqli_stmt_bind_param($query, 'i', $userId);
-    mysqli_stmt_execute($query);
+    if (!mysqli_stmt_execute($query)) {
+        error_log(mysqli_stmt_error($query));
+        mysqli_stmt_close($query);
+        responderAuth(500, ['message' => 'No fue posible consultar el perfil.']);
+    }
     $resultado = mysqli_stmt_get_result($query);
     $profile = $resultado ? mysqli_fetch_assoc($resultado) : false;
     mysqli_stmt_close($query);
@@ -89,10 +94,15 @@ if ($accion == 'change-password' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     $query = mysqli_prepare($conexion, 'SELECT password_hash FROM usuarios WHERE id = ? AND activo = 1 LIMIT 1');
     if (!$query) {
-        responderAuth(500, ['message' => 'No fue posible consultar la cuenta.']);
+        error_log(mysqli_error($conexion));
+        responderAuth(500, ['message' => 'No fue posible verificar la contraseña.']);
     }
     mysqli_stmt_bind_param($query, 'i', $userId);
-    mysqli_stmt_execute($query);
+    if (!mysqli_stmt_execute($query)) {
+        error_log(mysqli_stmt_error($query));
+        mysqli_stmt_close($query);
+        responderAuth(500, ['message' => 'No fue posible verificar la contraseña.']);
+    }
     $resultado = mysqli_stmt_get_result($query);
     $fila = $resultado ? mysqli_fetch_assoc($resultado) : false;
     mysqli_stmt_close($query);
@@ -102,11 +112,16 @@ if ($accion == 'change-password' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     $update = mysqli_prepare($conexion, 'UPDATE usuarios SET password_hash = ? WHERE id = ?');
     if (!$update) {
-        responderAuth(500, ['message' => 'No fue posible actualizar la contraseña.']);
+        error_log(mysqli_error($conexion));
+        responderAuth(500, ['message' => 'No fue posible cambiar la contraseña.']);
     }
-    $nuevoHash = password_hash($newPassword, PASSWORD_DEFAULT);
-    mysqli_stmt_bind_param($update, 'si', $nuevoHash, $userId);
-    mysqli_stmt_execute($update);
+    $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+    mysqli_stmt_bind_param($update, 'si', $newPasswordHash, $userId);
+    if (!mysqli_stmt_execute($update)) {
+        error_log(mysqli_stmt_error($update));
+        mysqli_stmt_close($update);
+        responderAuth(500, ['message' => 'No fue posible cambiar la contraseña.']);
+    }
     mysqli_stmt_close($update);
     session_regenerate_id(true);
     responderAuth(200, ['message' => 'La contraseña se cambió correctamente.']);

@@ -1,6 +1,19 @@
 <?php
 require_once __DIR__ . '/../cors.php';
 header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . '/../models/sesion.php';
+
+$usuario = usuarioActual();
+if ($usuario === null) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Debe iniciar sesión.']);
+    exit();
+}
+if (strtolower($usuario['rol']) !== 'administrador') {
+    http_response_code(403);
+    echo json_encode(['error' => 'Solo un administrador puede generar cuotas.']);
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -30,14 +43,12 @@ if (
     exit();
 }
 
-try {
-    require_once '../models/cuotas.php';
-    $modelo = new Cuotas();
-    echo json_encode(
-        $modelo->generarCuotas($periodo, (float) $presupuestoBase, $fechaVencimiento),
-        JSON_THROW_ON_ERROR
-    );
-} catch (Throwable $error) {
+require_once __DIR__ . '/../models/cuotas.php';
+$modelo = new Cuotas();
+$resultado = $modelo->generarCuotas($periodo, (float) $presupuestoBase, $fechaVencimiento);
+if ($resultado === false) {
     http_response_code(500);
-    echo json_encode(['error' => 'No fue posible generar las cuotas.', 'detalle' => $error->getMessage()]);
+    echo json_encode(['error' => 'No fue posible generar las cuotas.']);
+    exit();
 }
+echo json_encode($resultado, JSON_UNESCAPED_UNICODE);

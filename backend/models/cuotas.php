@@ -11,12 +11,22 @@ class Cuotas
         $this->conexion = (new Conexion())->conectar();
     }
 
-    public function generarCuotas(string $periodo, float $presupuestoBase, string $fechaVencimiento): array
+    public function generarCuotas(string $periodo, float $presupuestoBase, string $fechaVencimiento): array|false
     {
         $procedimiento = $this->conexion->prepare('CALL sp_generar_cuotas(?, ?, ?)');
+        if (!$procedimiento) {
+            return false;
+        }
         $procedimiento->bind_param('sds', $periodo, $presupuestoBase, $fechaVencimiento);
-        $procedimiento->execute();
+        if (!$procedimiento->execute()) {
+            $procedimiento->close();
+            return false;
+        }
         $resultadoProcedimiento = $procedimiento->get_result();
+        if (!$resultadoProcedimiento) {
+            $procedimiento->close();
+            return false;
+        }
         $resultado = $resultadoProcedimiento->fetch_assoc();
         $resultadoProcedimiento->free();
 
@@ -52,8 +62,14 @@ class Cuotas
              WHERE c.periodo = ?
              ORDER BY t.nombre, a.numero"
         );
+        if (!$consulta) {
+            return false;
+        }
         $consulta->bind_param('s', $periodo);
-        $consulta->execute();
+        if (!$consulta->execute()) {
+            $consulta->close();
+            return false;
+        }
         $resultadoCuotas = $consulta->get_result();
         $cuotas = $resultadoCuotas->fetch_all(MYSQLI_ASSOC);
         $resultadoCuotas->free();
