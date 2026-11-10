@@ -14,7 +14,7 @@
           <select name="apartamento" [(ngModel)]="apartamento_id" required>
             <option [ngValue]="null" disabled>Seleccione</option>
             @for (cuota of cuotas(); track cuota.cuota_id) {
-              <option [ngValue]="cuota.apartamento_id">{{ cuota.torre }} - {{ cuota.apartamento }} ({{ cuota.periodo }}, saldo {{ cuota.saldo }})</option>
+              <option [ngValue]="cuota.apartamento_id">{{ cuota.torre }} - {{ cuota.apartamento }} ({{ cuota.periodo }}, saldo {{ moneda(cuota.saldo) }})</option>
             }
           </select>
         </label>
@@ -64,7 +64,7 @@
                 <td>{{ cuota.apartamento }}</td>
                 <td class="numerico">{{ cuota.periodo }}</td>
                 <td>{{ cuota.fecha_vencimiento }}</td>
-                <td class="numerico">{{ cuota.saldo }}</td>
+                <td class="numerico">{{ moneda(cuota.saldo) }}</td>
               </tr>
             }
           </tbody>

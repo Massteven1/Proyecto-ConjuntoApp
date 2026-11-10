@@ -124,7 +124,7 @@
 
     @if (parqueaderos.length > 0) {
       <div class="tabla-contenedor tabla-contenedor--separada">
-        <table>
+        <table class="parqueaderos">
           <thead>
             <tr>
               <th>Código</th>
@@ -207,8 +207,7 @@
                 <td>{{ b.fecha_ingreso }}</td>
                 <td>{{ b.fecha_salida || '—' }}</td>
                 <td>
-                  <span class="estado" [class.estado--dentro]="b.estado === 'Dentro'"
-                        [class.estado--libre]="b.estado !== 'Dentro'">
+                  <span class="estado" [class.estado--dentro]="b.estado === 'Dentro'">
                     {{ b.estado }}
                   </span>
                 </td>

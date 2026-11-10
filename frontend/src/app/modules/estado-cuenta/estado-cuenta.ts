@@ -42,4 +42,11 @@ export class EstadoCuentaComponent {
     const numero = Number(valor);
     return Number.isFinite(numero) ? numero : 0;
   }
+
+  public moneda(valor: string | number | null | undefined): string {
+    return this.numero(valor).toLocaleString('es-CO', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
 }

@@ -20,3 +20,20 @@
 .filtros {
   margin-bottom: var(--e-4);
 }
+
+/* Parking register: keep the row actions on the same edge as their heading. */
+.parqueaderos th:nth-child(1),
+.parqueaderos td:nth-child(1),
+.parqueaderos th:nth-child(2),
+.parqueaderos td:nth-child(2) {
+  width: 34%;
+}
+
+.parqueaderos th:last-child,
+.parqueaderos td:last-child {
+  text-align: right;
+}
+
+.parqueaderos .acciones-fila {
+  justify-content: flex-end;
+}

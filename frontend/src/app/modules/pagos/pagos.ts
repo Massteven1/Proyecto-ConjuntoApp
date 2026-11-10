@@ -27,6 +27,14 @@ export class Pagos {
     });
   }
 
+  moneda(valor: string | number | null | undefined): string {
+    const numero = Number(valor);
+    if (!Number.isFinite(numero)) {
+      return '—';
+    }
+    return numero.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
   registrar(): void {
     if (!this.apartamento_id || !this.fecha_pago || !this.valor || this.valor <= 0 || !this.medio.trim()) {
       this.error.set('Complete los campos con valores válidos.');

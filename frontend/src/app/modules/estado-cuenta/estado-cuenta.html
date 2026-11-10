@@ -13,15 +13,15 @@
     <section class="resumen" aria-label="Totales generales">
       <div class="resumen__dato">
         <p class="resumen__etiqueta">Total facturado</p>
-        <p class="resumen__valor">{{ totalFacturado().toFixed(2) }}</p>
+        <p class="resumen__valor">{{ moneda(totalFacturado()) }}</p>
       </div>
       <div class="resumen__dato">
         <p class="resumen__etiqueta">Total pagado</p>
-        <p class="resumen__valor">{{ totalPagado().toFixed(2) }}</p>
+        <p class="resumen__valor">{{ moneda(totalPagado()) }}</p>
       </div>
       <div class="resumen__dato">
         <p class="resumen__etiqueta">Saldo pendiente</p>
-        <p class="resumen__valor">{{ saldoPendiente().toFixed(2) }}</p>
+        <p class="resumen__valor">{{ moneda(saldoPendiente()) }}</p>
       </div>
       <div class="resumen__dato">
         <p class="resumen__etiqueta">Cuotas en mora</p>
@@ -52,8 +52,8 @@
                 <td>{{ cuenta.residentes || 'Sin residente activo' }}</td>
                 <td class="numerico">{{ cuenta.cuotas_pendientes }}</td>
                 <td class="numerico">{{ cuenta.cuotas_en_mora }}</td>
-                <td class="numerico">{{ cuenta.saldo_total }}</td>
-                <td class="numerico">{{ cuenta.valor_pagado_total }}</td>
+                <td class="numerico">{{ moneda(cuenta.saldo_total) }}</td>
+                <td class="numerico">{{ moneda(cuenta.valor_pagado_total) }}</td>
               </tr>
             }
           </tbody>
