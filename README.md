@@ -83,9 +83,9 @@ La bitácora de ingresos se filtra por fecha, torre y apartamento, y muestra vis
 
 ### Base de datos y generación de cuotas
 
-Importa `sql/conjunto_app.sql` en MySQL para crear las tablas y `sp_generar_cuotas`. Antes de iniciar PHP, configura las variables de entorno `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASSWORD` con los datos locales de la base `conjunto_app`. El API de cuotas se encuentra en `http://localhost:8000/api/cuotasAPI.php`.
+Importa `sql/conjunto_app.sql` en MySQL para crear las tablas y `sp_generar_cuotas`. La conexión local está definida en `backend/models/conexion.php` (host `127.0.0.1`, usuario `root`, base `conjunto_app` y contraseña vacía); ajústala ahí si tu instalación de MySQL usa otras credenciales. El API de cuotas se encuentra en `http://localhost:8000/api/cuotasAPI.php`.
 
-La colección de Postman `docs/postman/cuotas.postman_collection.json` incluye el caso de generación; ejecuta la misma solicitud dos veces para verificar que el segundo intento no duplique cuotas del mismo apartamento y periodo.
+La colección de Postman `docs/postman/rf-19/cuotas.postman_collection.json` incluye el caso de generación; ejecuta la misma solicitud dos veces para verificar que el segundo intento no duplique cuotas del mismo apartamento y periodo.
 
 ## Trabajo diario
 
