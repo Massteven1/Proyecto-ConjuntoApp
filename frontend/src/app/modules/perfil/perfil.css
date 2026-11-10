@@ -1,5 +1,21 @@
 /* Solo ayudas de layout: todo el estilo visual vive en el sistema global (src/styles.css). */
 
+.perfil__disposicion {
+  display: grid;
+  gap: var(--e-4);
+  align-items: start;
+}
+
+.perfil__disposicion .panel + .panel {
+  margin-top: 0;
+}
+
+@media (min-width: 900px) {
+  .perfil__disposicion {
+    grid-template-columns: minmax(0, 1.3fr) minmax(19rem, 1fr);
+  }
+}
+
 .perfil__identidad {
   display: flex;
   align-items: center;
@@ -26,8 +42,4 @@
 .perfil__nombre {
   margin: 0;
   font-weight: 600;
-}
-
-.perfil__cambio {
-  max-width: 26rem;
 }
