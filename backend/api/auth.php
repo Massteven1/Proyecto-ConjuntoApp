@@ -55,13 +55,22 @@ if ($accion == 'profile' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     if ($userId < 1) {
         responderAuth(401, ['message' => 'Debe iniciar sesión.']);
     }
-    $query = $pdo->prepare(
+    $query = mysqli_prepare(
+        $conexion,
         'SELECT u.id, u.nombres, u.apellidos, u.documento, u.correo, u.telefono, r.nombre AS rol
          FROM usuarios u INNER JOIN roles r ON r.id = u.rol_id
-         WHERE u.id = :id AND u.activo = 1 LIMIT 1'
+         WHERE u.id = ? AND u.activo = 1 LIMIT 1'
     );
-    $query->execute(['id' => $userId]);
-    $profile = $query->fetch();
+    if (!$query) {
+        error_log(mysqli_error($conexion));
+        responderAuth(500, ['message' => 'No fue posible consultar el perfil.']);
+    }
+    mysqli_stmt_bind_param($query, 'i', $userId);
+    if (!mysqli_stmt_execute($query)) {
+        error_log(mysqli_stmt_error($query));
+        responderAuth(500, ['message' => 'No fue posible consultar el perfil.']);
+    }
+    $profile = mysqli_fetch_assoc(mysqli_stmt_get_result($query));
     if (!$profile) {
         responderAuth(401, ['message' => 'La cuenta no está activa.']);
     }
@@ -80,17 +89,31 @@ if ($accion == 'change-password' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     if (strlen($newPassword) < 8) {
         responderAuth(422, ['message' => 'La nueva contraseña debe tener al menos 8 caracteres.']);
     }
-    $query = $pdo->prepare('SELECT password_hash FROM usuarios WHERE id = :id AND activo = 1 LIMIT 1');
-    $query->execute(['id' => $userId]);
-    $passwordHash = $query->fetchColumn();
-    if ($passwordHash === false || !password_verify($currentPassword, (string) $passwordHash)) {
+    $query = mysqli_prepare($conexion, 'SELECT password_hash FROM usuarios WHERE id = ? AND activo = 1 LIMIT 1');
+    if (!$query) {
+        error_log(mysqli_error($conexion));
+        responderAuth(500, ['message' => 'No fue posible verificar la contraseña.']);
+    }
+    mysqli_stmt_bind_param($query, 'i', $userId);
+    if (!mysqli_stmt_execute($query)) {
+        error_log(mysqli_stmt_error($query));
+        responderAuth(500, ['message' => 'No fue posible verificar la contraseña.']);
+    }
+    mysqli_stmt_bind_result($query, $passwordHash);
+    if (!mysqli_stmt_fetch($query) || !password_verify($currentPassword, (string) $passwordHash)) {
         responderAuth(422, ['message' => 'La contraseña actual no es correcta.']);
     }
-    $update = $pdo->prepare('UPDATE usuarios SET password_hash = :password_hash WHERE id = :id');
-    $update->execute([
-        'password_hash' => password_hash($newPassword, PASSWORD_DEFAULT),
-        'id' => $userId,
-    ]);
+    $update = mysqli_prepare($conexion, 'UPDATE usuarios SET password_hash = ? WHERE id = ?');
+    if (!$update) {
+        error_log(mysqli_error($conexion));
+        responderAuth(500, ['message' => 'No fue posible cambiar la contraseña.']);
+    }
+    $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+    mysqli_stmt_bind_param($update, 'si', $newPasswordHash, $userId);
+    if (!mysqli_stmt_execute($update)) {
+        error_log(mysqli_stmt_error($update));
+        responderAuth(500, ['message' => 'No fue posible cambiar la contraseña.']);
+    }
     session_regenerate_id(true);
     responderAuth(200, ['message' => 'La contraseña se cambió correctamente.']);
 }
